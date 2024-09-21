@@ -1,1 +1,4 @@
-(ns forge.util.interface)
+(ns trend.util.interface)
+
+(defn id [entity]
+  (:id entity))

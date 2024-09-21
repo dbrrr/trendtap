@@ -10,3 +10,10 @@
                    :silo-id (parse-uuid silo-id)
                    :details [:lift details]}])
       (hh/returning [:*])))
+
+(defn by-id [{:keys [tenant-id] :as _ctx} actor-id]
+  (-> (hh/select :*)
+      (hh/from actor-table)
+      (hh/where [:and
+                 [:= :id (parse-uuid actor-id)]
+                 [:= :tenant-id (parse-uuid tenant-id)]])))

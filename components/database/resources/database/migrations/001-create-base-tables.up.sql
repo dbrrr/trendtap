@@ -7,6 +7,7 @@ CREATE TABLE silo (
   id uuid DEFAULT uuid_generate_v4 (),
   tenant_id uuid NOT NULL,
   details JSONB,
+  timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY (id),
   CONSTRAINT fk_tenant
     FOREIGN KEY(tenant_id)
@@ -20,8 +21,10 @@ CREATE TABLE actor (
   PRIMARY KEY (id),
   CONSTRAINT fk_tenant
     FOREIGN KEY(tenant_id)
-      REFERENCES tenant(id),
+      REFERENCES tenant(id)
+        ON DELETE CASCADE,
   CONSTRAINT fk_silo
     FOREIGN KEY(silo_id)
       REFERENCES silo(id)
+        ON DELETE CASCADE
 );
