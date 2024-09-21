@@ -6,6 +6,7 @@
                                poly/completion {:local/root "components/completion"}
                                poly/tenant {:local/root "components/tenant"}
                                poly/actor {:local/root "components/actor"}
+                               poly/util {:local/root "components/util"}
 
                                ; Bases
                                poly/cli {:local/root "bases/cli"}}}
