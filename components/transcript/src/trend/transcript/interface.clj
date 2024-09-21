@@ -23,6 +23,5 @@
   ;; TODO identify duplicate if the same file is uploaded twice
   (let [data (parse-jsonl-file file-path)
         {:keys [transcript] :as result} (extract-woz-formatted-transcript (first data))]
-    (println (:actors result))
     (blob-store/save! transcript)
     result))

@@ -6,7 +6,7 @@
         poly/database {:local/root "../../components/database"}
         poly/tenant {:local/root "../../components/tenant"}
         poly/completion {:local/root "../../components/completion"}
-        poly/util {:local/root "components/util"}
+        poly/util {:local/root "../../components/util"}
         poly/actor {:local/root "../../components/actor"}
         poly/silo {:local/root "../../components/silo"}}
  :aliases {:test {:extra-paths []
