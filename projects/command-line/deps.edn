@@ -1,8 +1,13 @@
-{:deps {org.clojure/clojure {:mvn/version "1.10.1"}
+{:deps {org.clojure/clojure {:mvn/version "1.11.1"}
         org.clojure/tools.deps.alpha {:mvn/version "0.12.985"}
 
-        poly/cli {:local/root "../../bases/cli"}}
-
+        poly/cli {:local/root "../../bases/cli"}
+        poly/transcript {:local/root "../../components/transcript"}
+        poly/database {:local/root "../../components/database"}
+        poly/tenant {:local/root "../../components/tenant"}
+        poly/completion {:local/root "../../components/completion"}
+        poly/actor {:local/root "../../components/actor"}
+        poly/silo {:local/root "../../components/silo"}}
  :aliases {:test {:extra-paths []
                   :extra-deps  {}}
            :uberjar {:main trend.cli.core}}}

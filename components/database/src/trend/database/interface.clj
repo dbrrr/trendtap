@@ -7,8 +7,8 @@
 (defn execute-one! [ctx query]
   (core/execute-one! (:db ctx) query))
 
-(defn create []
-  (core/create))
+(defn start []
+  (core/start))
 
 (defn truncate-all [database]
   (core/truncate-all database))

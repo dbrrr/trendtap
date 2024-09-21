@@ -4,6 +4,8 @@
                                poly/silo {:local/root "components/silo"}
                                poly/database {:local/root "components/database"}
                                poly/completion {:local/root "components/completion"}
+                               poly/tenant {:local/root "components/tenant"}
+                               poly/actor {:local/root "components/actor"}
 
                                ; Bases
                                poly/cli {:local/root "bases/cli"}}}
@@ -15,5 +17,5 @@
                                  :deps/root "projects/poly"}}}
             :build {:deps {io.github.clojure/tools.build {:mvn/version "0.9.6"}
                            org.clojure/tools.deps {:mvn/version "0.16.1281"}}
-                    :extra-paths ["."]
+                    :extra-paths ["." "development/src"]
                     :ns-default build}}}

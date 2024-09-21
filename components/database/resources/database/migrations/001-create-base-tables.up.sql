@@ -20,7 +20,7 @@ CREATE TABLE actor (
   PRIMARY KEY (id),
   CONSTRAINT fk_tenant
     FOREIGN KEY(tenant_id)
-      REFERENCES tenant(id)
+      REFERENCES tenant(id),
   CONSTRAINT fk_silo
     FOREIGN KEY(silo_id)
       REFERENCES silo(id)

@@ -137,5 +137,6 @@
   clojure.lang.IFn
   (invoke [_] datasource))
 
-(defn create []
-  (map->Database {:db-url "postgresql://postgres:psql@localhost:5432/trendtap"}))
+(defn start []
+  (component/start
+   (map->Database {:db-url "postgresql://postgres:psql@localhost:5432/trendtap"})))
