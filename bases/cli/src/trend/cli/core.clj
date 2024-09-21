@@ -3,7 +3,8 @@
             [clojure.tools.cli :refer [parse-opts]]
             [trend.transcript.interface :as transcript]
             [trend.tenant.interface :as tenant]
-            [trend.database.interface :as database])
+            [trend.database.interface :as database]
+            [trend.cli.ingest :as ingest])
   (:gen-class))
 
 (def cli-options
@@ -59,5 +60,5 @@
                        (tenant/create! {:db db} "Default"))
             ctx {:db db :tenant-id (:id tenant)}]
         (case action
-          "ingest" (transcript/ingest-file ctx :foo (:file options))
+          "ingest" (ingest/ingest ctx (:file options))
           "quit" (exit 0 "Bye!"))))))

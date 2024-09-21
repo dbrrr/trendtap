@@ -2,10 +2,7 @@
   (:require [wkok.openai-clojure.api :as api]
             [trend.completion.key :as key]))
 
-(def default-feedback-prompt
-  [{:role "system" :content "You are a helpful assistant, focused on gathering product feedback."}])
-
-(defn submit [ctx messages]
+(defn submit [messages]
   (let [response (api/create-chat-completion {:model "gpt-3.5-turbo"
                                               :messages messages}
                                              {:api-key key/chatgpt-key
