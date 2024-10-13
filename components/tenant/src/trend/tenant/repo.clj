@@ -16,3 +16,8 @@
 (defn find-first []
   (-> (hh/select :*)
       (hh/from tenant-table)))
+
+(defn by-id [tenant-id]
+  (-> (hh/select :*)
+      (hh/from tenant-table)
+      (hh/where [:= :id (parse-uuid tenant-id)])))

@@ -8,5 +8,8 @@
 (defn delete-by-id! [ctx id]
   (db/execute-one! ctx (repo/delete-by-id ctx id)))
 
+(defn by-id! [ctx id]
+  (db/execute-one! ctx (repo/by-id id)))
+
 (defn find-first! [ctx]
   (db/execute-one! ctx (repo/find-first)))

@@ -48,12 +48,20 @@ CREATE TABLE actor (
 CREATE TABLE account (
   id uuid DEFAULT uuid_generate_v4 (),
   email citext NOT NULL,
-  tenant_id uuid NOT NULL,
   details JSONB,
   PRIMARY KEY (id),
+  CONSTRAINT unique_account_email UNIQUE (email)
+);
+CREATE TABLE tenant_account_mapping (
+  tid uuid NOT NULL,
+  account_id uuid NOT NULL,
   CONSTRAINT fk_tenant
-    FOREIGN KEY(tenant_id)
+    FOREIGN KEY(tid)
       REFERENCES tenant(id)
         ON DELETE CASCADE,
-  CONSTRAINT unique_tenant_email UNIQUE(tenant_id, email)
+  CONSTRAINT fk_account
+    FOREIGN KEY(account_id)
+      REFERENCES account(id)
+        ON DELETE CASCADE,
+  PRIMARY KEY (tid, account_id)
 );
