@@ -1,6 +1,6 @@
 (ns trend.util.test.fixtures
   (:require [trend.database.interface :as db]
-            [trend.tenant.interface :as tenant]
+            [trend.util.test.util :as test-util]
             [com.stuartsierra.component :as component]))
 
 (def ^:private current-test-db (atom nil))
@@ -12,17 +12,10 @@
 (defn test-ctx []
   @current-test-ctx)
 
-(defn- tenant-ctx
-  "Creates a tenant and returns a context, for use in testing"
-  []
-  (let [ctx {:db (test-db)}
-        t (tenant/create! ctx "test-tenant")]
-    (assoc ctx :tenant-id (:id t))))
-
 (defn database [f]
   (let [db (db/start)]
     (reset! current-test-db db)
-    (reset! current-test-ctx (tenant-ctx))
+    (reset! current-test-ctx (test-util/tenant-ctx {:db (test-db)}))
     (try
       (f)
       (finally

@@ -5,5 +5,8 @@
 (defn create! [ctx name]
   (db/execute-one! ctx (repo/create ctx name)))
 
+(defn delete-by-id! [ctx id]
+  (db/execute-one! ctx (repo/delete-by-id ctx id)))
+
 (defn find-first! [ctx]
   (db/execute-one! ctx (repo/find-first)))

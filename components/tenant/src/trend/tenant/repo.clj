@@ -9,6 +9,10 @@
       (hh/values [{:name name}])
       (hh/returning [:*])))
 
+(defn delete-by-id [_ctx id]
+  (-> (hh/delete-from tenant-table)
+      (hh/where [:= :id (parse-uuid id)])))
+
 (defn find-first []
   (-> (hh/select :*)
       (hh/from tenant-table)))

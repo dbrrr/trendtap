@@ -11,3 +11,10 @@ You can also get in touch with the Polylith Team on [Slack](https://clojurians.s
 <h1>trendtap</h1>
 
 <p>Add your workspace documentation here...</p>
+
+
+# Dev setup
+
+docker run -d --name dev-postgres -e POSTGRES_PASSWORD=psql -v ${HOME}/postgres-data:/var/lib/postgresql/data -p 5432:5432 postgres
+
+docker exec -it dev-postgres psql -U postgres

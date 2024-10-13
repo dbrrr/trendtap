@@ -45,3 +45,15 @@ CREATE TABLE actor (
       REFERENCES silo(id)
         ON DELETE CASCADE
 );
+CREATE TABLE account (
+  id uuid DEFAULT uuid_generate_v4 (),
+  email citext NOT NULL,
+  tenant_id uuid NOT NULL,
+  details JSONB,
+  PRIMARY KEY (id),
+  CONSTRAINT fk_tenant
+    FOREIGN KEY(tenant_id)
+      REFERENCES tenant(id)
+        ON DELETE CASCADE,
+  CONSTRAINT unique_tenant_email UNIQUE(tenant_id, email)
+);
