@@ -1,6 +1,10 @@
 (ns trend.rest-api.signup
   (:require
-    [trend.rest-api.common :as common]))
+   [trend.rest-api.common :as common]))
+
+(defn new-user [{{{:keys [first-name last-name email]} :form} :parameters}]
+  {:status 200
+   :body (str first-name last-name email)})
 
 (defn signup-form []
   (common/render-and-respond
@@ -23,7 +27,7 @@
            [:rect {:width "100%", :height "100%", :stroke-width "0", :fill "url(#83fd4e5a-9d52-42fc-97b6-718e5d7ee527)"}]]]
          [:h2 {:class "text-3xl font-bold tracking-tight text-gray-900"} "Signup"]
          [:p {:class "mt-6 text-lg leading-8 text-gray-600"} "Less noise. More context."]]]
-       [:form {:action "#", :method "POST", :class "px-6 pb-24 pt-20 sm:pb-32 lg:px-8 lg:py-48"}
+       [:form {:action "/signup", :method "POST", :class "px-6 pb-24 pt-20 sm:pb-32 lg:px-8 lg:py-48"}
         [:div {:class "mx-auto max-w-xl lg:mr-0 lg:max-w-lg"}
          [:div {:class "grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2"}
           [:div

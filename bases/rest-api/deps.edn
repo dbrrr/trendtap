@@ -7,6 +7,7 @@
         http-kit/http-kit {:mvn/version "2.7.0-alpha4"}
         camel-snake-kebab {:mvn/version "0.4.3"}
         org.clojure/core.async {:mvn/version "1.6.673"}
-        metosin/reitit {:mvn/version "0.6.0"}}
+        metosin/reitit {:mvn/version "0.7.2"}
+        metosin/muuntaja-form {:mvn/version "0.6.10"}}
  :aliases {:test {:extra-paths ["test"]
                   :extra-deps {}}}}

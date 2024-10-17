@@ -27,10 +27,13 @@
 
 (def route-tree
   (ring/router
-   [["/" {:get {:handler (fn [req] (app-load req))}}]
+   [["/" {:get {:handler (fn [req] req)}}]
     ["/signup" {:get {:handler (fn [req]
-                                 (signup/signup-form))}}]
-
+                                 (signup/signup-form))}
+                :post {:handler (fn [req]
+                                  (signup/new-user req))
+                       :parameters {:form any?}
+                       }}]
     ;; Unnecessary stuff
     ["/htmx-library" {:get {:handler (fn [req] (htmx-library req))}}]
     ["/htmx-ws" {:get {:handler (fn [req] (htmx-ws req))}}]

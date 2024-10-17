@@ -1,8 +1,7 @@
 (ns trend.rest-api.server
-  (:require [trend.rest-api.core :as core]
-            [com.stuartsierra.component :as component]
-            [org.httpkit.server :as http-kit]
-            [trend.database.interface :as db]))
+  (:require
+   [org.httpkit.server :as http-kit]
+   [trend.rest-api.core :as core]))
 
 (defonce ^:private server-ref (atom nil))
 
@@ -28,7 +27,7 @@
     (println "No server")))
 
 (start! 6003)
-(stop!)
+#_(stop!)
 
 (defn -main [& _args]
   (start! (Integer/valueOf
