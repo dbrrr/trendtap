@@ -6,6 +6,9 @@
 (defn create! [ctx silo-id info]
   (database/execute-one! ctx (repo/create ctx silo-id info)))
 
+(defn link-to-account [ctx actor-id account-id]
+  (database/execute-one! ctx (repo/link-to-account ctx actor-id account-id)))
+
 (defn by-id! [ctx actor-id]
   (database/execute-one! ctx (repo/by-id ctx actor-id)))
 

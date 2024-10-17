@@ -4,6 +4,13 @@
 
 (def actor-table :actor)
 
+(defn link-to-account [{:keys [tenant-id] :as _ctx} actor-id account-id]
+  (-> (hh/update actor-table)
+      (hh/set {:account-id (parse-uuid account-id)})
+      (hh/where [:and
+                 [:= :id (parse-uuid actor-id)]
+                 [:= :tenant-id (parse-uuid tenant-id)]])))
+
 (defn create [{:keys [tenant-id] :as _ctx} silo-id details]
   (-> (hh/insert-into actor-table)
       (hh/values [{:tenant-id (parse-uuid tenant-id)
