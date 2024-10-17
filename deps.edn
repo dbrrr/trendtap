@@ -10,7 +10,8 @@
                                poly/util {:local/root "components/util"}
 
                                ; Bases
-                               poly/cli {:local/root "bases/cli"}}}
+                               poly/cli {:local/root "bases/cli"}
+                               poly/rest-api {:local/root "bases/rest-api"}}}
             :test {:extra-paths []}
             :poly {:main-opts ["-m" "polylith.clj.core.poly-cli.core"]
                    :extra-deps {polyfy/polylith
