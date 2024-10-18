@@ -1,7 +1,10 @@
 (ns trend.rest-api.server
   (:require
    [org.httpkit.server :as http-kit]
-   [trend.rest-api.core :as core]))
+   [trend.rest-api.core :as core]
+   [com.stuartsierra.component :as component]
+   [trend.database.interface :as db]
+   [trend.rest-api.system :as system]))
 
 (defonce ^:private server-ref (atom nil))
 
@@ -11,7 +14,7 @@
     (println "server already running!")
     (do
       (println "Starting server on port: " port)
-      #_(reset! system/system (component/start (db/create)))
+      (reset! system/system {:db (db/start)})
       (reset! server-ref
               (http-kit/run-server core/handler
                                    {:port port
@@ -21,13 +24,13 @@
   (if-let [server @server-ref]
     (do
       (println "Stopping server")
-      #_(component/stop @system/system)
+      (component/stop (:db @system/system))
       (server)
       (reset! server-ref nil))
     (println "No server")))
 
 (start! 6003)
-#_(stop!)
+(stop!)
 
 (defn -main [& _args]
   (start! (Integer/valueOf
