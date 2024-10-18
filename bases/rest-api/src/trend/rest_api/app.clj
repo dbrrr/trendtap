@@ -1,6 +1,6 @@
 (ns trend.rest-api.app
   (:require
-    [trend.rest-api.common :as common]))
+   [trend.rest-api.common :as common]))
 
 (defn load-it [x]
   (common/render-and-respond
@@ -66,11 +66,58 @@
        [:div {:class "mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8"}
         [:h1 {:class "text-lg font-semibold leading-6 text-gray-900"} "Activity"]]]
       [:main
-       [:div {:id "activity-container"
-              :style {"width" "100%"
-                      "height" "100%"
-                      "display" "block"}}]
+       [:div {:class "mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8"}
+        [:div {:class "mx-auto grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-2"}
+         [:div {:id "activity-container"
+                :style {"width" "100%"
+                        "position" "absolute"
+                        "z-index" 0
+                        "height" "500px"
+                        "display" "block"}}]
 
-       #_[:div {:class "mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8"}]
+         [:div {:class "lg:col-start-3 lg:row-end-1" :style {"z-index" 100}}
+          [:ul {:role "list", :class "grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-1 xl:gap-x-8 w-96"}
+           [:li {:class "overflow-hidden rounded-xl border border-gray-200"}
+            [:div {:class "flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6"}
+             [:img {:src "https://tailwindui.com/plus/img/logos/48x48/tuple.svg", :alt "Tuple", :class "h-12 w-12 flex-none rounded-lg bg-white object-cover ring-1 ring-gray-900/10"}]
+             [:div {:class "text-sm font-medium leading-6 text-gray-900"} "Tuple"]]
+            [:dl {:class "-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6"}
+             [:div {:class "flex justify-between gap-x-4 py-3"}
+              [:dt {:class "text-gray-500"} "Last invoice"]
+              [:dd {:class "text-gray-700"}
+               [:time {:datetime "2022-12-13"} "December 13, 2022"]]]
+             [:div {:class "flex justify-between gap-x-4 py-3"}
+              [:dt {:class "text-gray-500"} "Amount"]
+              [:dd {:class "flex items-start gap-x-2"}
+               [:div {:class "font-medium text-gray-900"} "$2,000.00"]
+               [:div {:class "rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10"} "Overdue"]]]]]
+           [:li {:class "overflow-hidden rounded-xl border border-gray-200"}
+            [:div {:class "flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6"}
+             [:img {:src "https://tailwindui.com/plus/img/logos/48x48/savvycal.svg", :alt "SavvyCal", :class "h-12 w-12 flex-none rounded-lg bg-white object-cover ring-1 ring-gray-900/10"}]
+             [:div {:class "text-sm font-medium leading-6 text-gray-900"} "SavvyCal"]]
+            [:dl {:class "-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6"}
+             [:div {:class "flex justify-between gap-x-4 py-3"}
+              [:dt {:class "text-gray-500"} "Last invoice"]
+              [:dd {:class "text-gray-700"}
+               [:time {:datetime "2023-01-22"} "January 22, 2023"]]]
+             [:div {:class "flex justify-between gap-x-4 py-3"}
+              [:dt {:class "text-gray-500"} "Amount"]
+              [:dd {:class "flex items-start gap-x-2"}
+               [:div {:class "font-medium text-gray-900"} "$14,000.00"]
+               [:div {:class "rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20"} "Paid"]]]]]
+           [:li {:class "overflow-hidden rounded-xl border border-gray-200"}
+            [:div {:class "flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6"}
+             [:img {:src "https://tailwindui.com/plus/img/logos/48x48/reform.svg", :alt "Reform", :class "h-12 w-12 flex-none rounded-lg bg-white object-cover ring-1 ring-gray-900/10"}]
+             [:div {:class "text-sm font-medium leading-6 text-gray-900"} "Reform"]]
+            [:dl {:class "-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6"}
+             [:div {:class "flex justify-between gap-x-4 py-3"}
+              [:dt {:class "text-gray-500"} "Last invoice"]
+              [:dd {:class "text-gray-700"}
+               [:time {:datetime "2023-01-23"} "January 23, 2023"]]]
+             [:div {:class "flex justify-between gap-x-4 py-3"}
+              [:dt {:class "text-gray-500"} "Amount"]
+              [:dd {:class "flex items-start gap-x-2"}
+               [:div {:class "font-medium text-gray-900"} "$7,600.00"]
+               [:div {:class "rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20"} "Paid"]]]]]]]]]
 
-       ]]]]))
+       #_[:div {:class "mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8"}]]]]]))
