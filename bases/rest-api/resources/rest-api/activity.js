@@ -6,13 +6,58 @@ var cy = cytoscape({
 
   elements: [ // list of graph elements to start with
     { // node a
-      data: { id: 'a' }
+      data: {id: 'Rafaa' }
     },
-    { // node b
-      data: { id: 'b' }
+    {
+      data: {id: 'Fredrik'}
+    },
+    {
+      data: {id: 'Luca'}
+    },
+    {
+      data: {id: 'Elia'}
+    },
+    {
+      data: {id: 'Dave'}
+    },
+    {
+      data: {id: 'Erik'}
+    },
+    {
+      data: {id: 'Mel'}
+    },
+    {
+      data: {id: 'Meeting 1'}
+    },
+    {
+      data: {id: 'Meeting 2'}
+    },
+    {
+      data: {id: 'Elia'}
     },
     { // edge ab
-      data: { id: 'ab', source: 'a', target: 'b' }
+      data: { id: 'Friends1', source: 'Rafaa', target: 'Meeting 1'}
+    },
+    { // edge ab
+      data: { id: 'Friends2', source: 'Fredrik', target: 'Meeting 1'}
+    },
+    { // edge ab
+      data: { id: 'Friends3', source: 'Dave', target: 'Meeting 1'}
+    },
+    { // edge ab
+      data: { id: 'Friends4', source: 'Dave', target: 'Meeting 2'}
+    },
+    { // edge ab
+      data: { id: 'Friends5', source: 'Erik', target: 'Meeting 2'}
+    },
+    { // edge ab
+      data: { id: 'Friends6', source: 'Mel', target: 'Meeting 2'}
+    },
+    { // edge ab
+      data: { id: 'Friends7', source: 'Luca', target: 'Meeting 1'}
+    },
+    { // edge ab
+      data: { id: 'Friends8', source: 'Elia', target: 'Meeting 1'}
     }
   ],
 
@@ -28,7 +73,7 @@ var cy = cytoscape({
     {
       selector: 'edge',
       style: {
-        'width': 3,
+        'width': 1,
         'line-color': '#ccc',
         'target-arrow-color': '#ccc',
         'target-arrow-shape': 'triangle',
@@ -38,8 +83,26 @@ var cy = cytoscape({
   ],
 
   layout: {
-    name: 'grid',
-    rows: 1
+    name: 'random'
   }
 
 });
+
+var r = cy.$("#Rafaa");
+var e = cy.$("#Elia");
+
+let current = r;
+
+/**
+setInterval(() => {
+    current = (current === e) ? r : e;
+    cy.animate({
+        center: { eles: current}, // Center on the node
+        padding: 50,
+        zoom: 2},
+        {duration: 250 }
+        );
+    console.log(current); // Replace with whatever action you want to perform
+  }, 5000);
+
+*/
