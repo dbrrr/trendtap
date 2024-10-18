@@ -6,6 +6,7 @@
   (common/render-and-respond
    [:html
     common/head
+    [:script {:type "module" :src "/activity"}]
     [:body
      [:div {:class "min-h-full"}
       [:nav {:class "bg-gray-800"}
@@ -65,4 +66,11 @@
        [:div {:class "mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8"}
         [:h1 {:class "text-lg font-semibold leading-6 text-gray-900"} "Activity"]]]
       [:main
-       [:div {:class "mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8"}  ]]]]]))
+       [:div {:id "activity-container"
+              :style {"width" "100%"
+                      "height" "100%"
+                      "display" "block"}}]
+
+       #_[:div {:class "mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8"}]
+
+       ]]]]))

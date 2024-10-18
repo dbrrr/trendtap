@@ -23,6 +23,11 @@
    :headers {"Content-type" "application/javascript"}
    :body (slurp "bases/rest-api/resources/rest-api/sse.js")})
 
+(defn activity [_req]
+  {:status 200
+   :headers {"Content-type" "application/javascript"}
+   :body (slurp "bases/rest-api/resources/rest-api/activity.js")})
+
 (defn tailwind [_req]
   {:status 200
    :headers {"Content-type" "text/css"}
@@ -50,6 +55,7 @@
                        :parameters {:form any?}}}]
     ;; Unnecessary stuff
     ["/htmx-library" {:get {:handler (fn [req] (htmx-library req))}}]
+    ["/activity" {:get {:handler (fn [req] (activity req))}}]
     ["/htmx-ws" {:get {:handler (fn [req] (htmx-ws req))}}]
     ["/htmx-sse" {:get {:handler (fn [req] (htmx-sse req))}}]
     ["/tailwind" {:get {:handler (fn [req] (tailwind req))}}]]
