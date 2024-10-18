@@ -15,12 +15,12 @@
          [:div {:class "divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow p-5"}
           "Success! Please check your email"]]]]])))
 
-(defn signup-form []
+(defn signup-form [links]
   (common/render-and-respond
    [:html
     common/head
     [:body
-     [:form {:action "/signup" :method "POST"}
+     [:form {:action (:link/signup links) :method "POST"}
       [:div {:class "mx-auto max-w-2xl mt-20"}
        [:div {:class "divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow"}
         [:div {:class "px-4 py-5 sm:p-6"}

@@ -5,7 +5,8 @@
    [reitit.ring :as ring]
    [trend.rest-api.signup :as signup]
    [trend.rest-api.login :as login]
-   [trend.rest-api.link :as link]))
+   [trend.rest-api.link :as link]
+   [trend.rest-api.app :as app]))
 
 (defn htmx-library [_req]
   {:status 200
@@ -31,12 +32,20 @@
 (link/routes route-tree
   (ring/router
    [["/" {:get {:handler (fn [req] req)}}]
+    ["/app" {:get {:handler (fn [req]
+                              (app/load-it req)
+
+                              )}}]
     ["/login" {:name :link/login
                :get {:handler (fn [req]
                                 (login/login-page (link/to :link/login
-                                                           :link/signup)))}}]
+                                                           :link/signup)))}
+               :post {:handler (fn [req]
+                                 ;; TODO login doesn't actually do anything currently
+                                 {:status 301
+                                  :headers {"Location" "/app"}})}}]
     ["/signup" {:name :link/signup
-                :get {:handler (fn [req] (signup/signup-form))}
+                :get {:handler (fn [req] (signup/signup-form (link/to :link/signup)))}
                 :post {:handler (fn [req] (signup/new-user req))
                        :parameters {:form any?}}}]
     ;; Unnecessary stuff
