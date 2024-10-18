@@ -83,7 +83,7 @@ var cy = cytoscape({
   ],
 
   layout: {
-    name: 'random'
+    name: 'cose'
   }
 
 });
