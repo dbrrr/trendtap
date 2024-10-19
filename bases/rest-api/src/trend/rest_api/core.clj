@@ -6,7 +6,8 @@
    [trend.rest-api.signup :as signup]
    [trend.rest-api.login :as login]
    [trend.rest-api.link :as link]
-   [trend.rest-api.app :as app]))
+   [trend.rest-api.app :as app]
+   [trend.rest-api.demo :as demo]))
 
 (defn htmx-library [_req]
   {:status 200
@@ -53,6 +54,8 @@
                 :get {:handler (fn [req] (signup/signup-form (link/to :link/signup)))}
                 :post {:handler (fn [req] (signup/new-user req))
                        :parameters {:form any?}}}]
+    ["/demo" {:name :link/demo
+              :get {:handler (fn [req] (demo/silo))}}]
     ;; Unnecessary stuff
     ["/htmx-library" {:get {:handler (fn [req] (htmx-library req))}}]
     ["/activity" {:get {:handler (fn [req] (activity req))}}]
