@@ -55,10 +55,12 @@
                 :post {:handler (fn [req] (signup/new-user req))
                        :parameters {:form any?}}}]
     ["/silo/example"
-     ["" {:name :link/demo
-          :get {:handler (fn [req] (demo/silo))}}]
-     ["/actor" {:name :link/demo-actor
-                :get {:handler (fn [req] (demo/add-actor))}}]]
+     ["" {:name :link/silo-example
+          :get {:handler (fn [req] (demo/silo (link/to :link/get-actor-row
+                                                       :link/silo-example)))}
+          :post {:handler (fn [req] {:status 200 :body "hey!"})}}]
+     ["/actor" {:name :link/get-actor-row
+                :get {:handler (fn [req] (demo/add-actor (link/to :link/get-actor-row)))}}]]
 
     ;; Unnecessary stuff
     ["/htmx-library" {:get {:handler (fn [req] (htmx-library req))}}]

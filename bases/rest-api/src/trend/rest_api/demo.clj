@@ -1,13 +1,13 @@
 (ns trend.rest-api.demo
   (:require [trend.rest-api.common :as common]))
 
-(defn add-actor-row []
+(defn add-actor-row [get-actor-row-link]
   [:tr {:id "add-actor"}
    [:td {:class "whitespace-nowrap py-2 pl-4 pr-3 text-sm sm:pl-0"}
     [:div {:class "flex items-center"}
      [:div {:class "relative"}
       [:button {:type "button",
-                :hx-get "/silo/example/actor"
+                :hx-get get-actor-row-link
                 :hx-target "#add-actor"
                 :hx-swap "outerHTML"
                 :class "flex block w-full mt-2 rounded-lg border-2 border-dashed border-gray-300 p-2 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"}
@@ -55,18 +55,18 @@
    [:div {:class "mt-2"}
     [:textarea {:rows "4", :name "description", :id "description", :class "px-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"}]]])
 
-(defn add-actor []
+(defn add-actor [links]
   (common/respond
    (str
     (common/render (actor-row {}))
-    (common/render (add-actor-row)))))
+    (common/render (add-actor-row (:link/get-actor-row links))))))
 
-(defn silo []
+(defn silo [links]
   (common/render-and-respond
    [:html
     common/head
     [:body
-     [:form {:action "#" :method "POST"}
+     [:form {:action (:link/silo-example links) :method "POST"}
       [:div {:class "mx-auto max-w-2xl mt-20"}
        [:div {:class "divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow"}
         [:div {:class "px-4 py-5 sm:p-6"}
@@ -86,7 +86,7 @@
                           :name "David Russell"
                           :current-user? true})
               (actor-row {:id (random-uuid)})
-              (add-actor-row)]]]]]]
+              (add-actor-row (:link/get-actor-row links))]]]]]]
 
         [:div {:class "px-4 py-4 sm:px-6"}
          [:div {:class "flex justify-end"}
