@@ -25,5 +25,6 @@
    [:title "MindHive"]
    [:script {:src "/htmx-library"}]
    [:script {:src "/htmx-ws"}]
+   [:script {:src "/hyperscript"}]
    [:script {:src "/htmx-sse"}]
    [:script {:src "/tailwind"}]])

@@ -9,6 +9,11 @@
    [trend.rest-api.app :as app]
    [trend.rest-api.demo :as demo]))
 
+(defn hyperscript [_req]
+  {:status 200
+   :headers {"Content-type" "application/javascript"}
+   :body (slurp "bases/rest-api/resources/rest-api/hyperscript.js")})
+
 (defn htmx-library [_req]
   {:status 200
    :headers {"Content-type" "application/javascript"}
@@ -58,7 +63,8 @@
      ["" {:name :link/silo-example
           :get {:handler (fn [req] (demo/silo (link/to :link/get-actor-row
                                                        :link/silo-example)))}
-          :post {:handler (fn [req] {:status 200 :body "hey!"})}}]
+          :post {:handler (fn [req] (demo/generate {}))}}]
+
      ["/actor" {:name :link/get-actor-row
                 :get {:handler (fn [req] (demo/add-actor (link/to :link/get-actor-row)))}}]]
 
@@ -66,6 +72,7 @@
     ["/htmx-library" {:get {:handler (fn [req] (htmx-library req))}}]
     ["/activity" {:get {:handler (fn [req] (activity req))}}]
     ["/htmx-ws" {:get {:handler (fn [req] (htmx-ws req))}}]
+    ["/hyperscript" {:get {:handler (fn [req] (hyperscript req))}}]
     ["/htmx-sse" {:get {:handler (fn [req] (htmx-sse req))}}]
     ["/tailwind" {:get {:handler (fn [req] (tailwind req))}}]]
    {:data {:coercion malli-coercion/coercion

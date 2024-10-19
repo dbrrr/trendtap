@@ -90,4 +90,17 @@
 
         [:div {:class "px-4 py-4 sm:px-6"}
          [:div {:class "flex justify-end"}
-          [:button {:type "submit", :class "rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"} "Generate example"]]]]]]]]))
+          [:button {:type "submit",
+                    :_ "on click set my.innerText to 'Loading...'"
+                    :class "rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"} "Generate example"]]]]]]]]))
+
+(defn generate [links]
+  (common/render-and-respond
+   [:html
+    common/head
+    [:body
+     [:div {:class "mx-auto max-w-2xl mt-20"}
+      [:div {:class "divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow"}
+
+       ]
+      ]]]))
