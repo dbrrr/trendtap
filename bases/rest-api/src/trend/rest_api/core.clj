@@ -54,8 +54,12 @@
                 :get {:handler (fn [req] (signup/signup-form (link/to :link/signup)))}
                 :post {:handler (fn [req] (signup/new-user req))
                        :parameters {:form any?}}}]
-    ["/demo" {:name :link/demo
-              :get {:handler (fn [req] (demo/silo))}}]
+    ["/silo/example"
+     ["" {:name :link/demo
+          :get {:handler (fn [req] (demo/silo))}}]
+     ["/actor" {:name :link/demo-actor
+                :get {:handler (fn [req] (demo/add-actor))}}]]
+
     ;; Unnecessary stuff
     ["/htmx-library" {:get {:handler (fn [req] (htmx-library req))}}]
     ["/activity" {:get {:handler (fn [req] (activity req))}}]

@@ -11,10 +11,13 @@
       rum-wrap
       (rum/render-html)))
 
+(defn respond [rendered-html]
+  (response/response rendered-html))
+
 (defn render-and-respond [html]
   (-> html
       render
-      (response/response)))
+      respond))
 
 (def head
   [:head

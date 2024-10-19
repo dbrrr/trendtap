@@ -2,11 +2,15 @@
   (:require [trend.rest-api.common :as common]))
 
 (defn add-actor-row []
-  [:tr
+  [:tr {:id "add-actor"}
    [:td {:class "whitespace-nowrap py-2 pl-4 pr-3 text-sm sm:pl-0"}
     [:div {:class "flex items-center"}
      [:div {:class "relative"}
-      [:button {:type "button", :class "flex block w-full mt-2 rounded-lg border-2 border-dashed border-gray-300 p-2 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"}
+      [:button {:type "button",
+                :hx-get "/silo/example/actor"
+                :hx-target "#add-actor"
+                :hx-swap "outerHTML"
+                :class "flex block w-full mt-2 rounded-lg border-2 border-dashed border-gray-300 p-2 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"}
        [:svg {:xmlns "http://www.w3.org/2000/svg", :x "0px", :y "0px", :width "20", :height "20", :viewbox "0 0 16 16"}
         [:circle {:cx "8", :cy "8", :r "8", :fill "#33cc33"}]
         [:polygon {:fill "#fff", :points "12,7 9,7 9,4 7,4 7,7 4,7 4,9 7,9 7,12 9,12 9,9 12,9"}]]
@@ -39,6 +43,13 @@
       [:div {:class "relative"}
        [:label {:for "name", :class "absolute -top-2 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-900"} content-label]
        [:textarea {:rows "2", :name "comment", :id "comment", :class "px-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"}]]]]))
+
+(defn add-actor []
+  (common/respond
+   (str
+    (common/render (actor-row {}))
+    (common/render (add-actor-row))))
+   )
 
 (defn silo []
   (common/render-and-respond
