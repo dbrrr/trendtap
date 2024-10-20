@@ -3,7 +3,11 @@
    [clojure.data.json :as json]
    [clojure.string :as str]
    [trend.completion.interface :as completion]
-   [trend.rest-api.common :as common]))
+   [trend.rest-api.common :as common]
+   [trend.silo.interface :as silo]
+   [trend.transcript.interface :as transcript]
+   [trend.actor.interface :as actor]
+   [trend.util.interface :as util]))
 
 (defn add-actor-row [get-actor-row-link]
   [:tr {:id "add-actor"}
@@ -125,14 +129,19 @@
       [:div {:class "mt-2 text-sm text-gray-700"}
        [:p text]]]]]])
 
-(defn generate [links form-params]
+(defn generate [ctx links form-params]
   (let [participants (->participants (dissoc form-params :description))
         demo (completion/submit
               (concat [{:role "system" :content (completion/render-prompt demo-system-message-template {})}]
                       [{:role "user" :content (completion/render-prompt demo-user-message-template
                                                                         {:description (:description form-params)
                                                                          :participants participants})}]))
-        response (:transcript (json/read-str demo :key-fn keyword))]
+        response (json/read-str demo :key-fn keyword)
+        {:keys [actors]} (transcript/ingest-demo-format response)
+        silo (silo/create! ctx (silo/->meeting-transcript "foobar"))]
+    (doseq [actor actors]
+      (actor/create! ctx (util/id silo) {:description actor}))
+
     (common/render-and-respond
      [:html
       common/head
@@ -144,7 +153,7 @@
           [:h2 {:class "text-3xl font-bold tracking-tight text-gray-900"} "Your short example meeting"]]]
          [:div {:class "flow-root mt-5"}
           [:ul {:role "list", :class "-mb-8"}
-           (doall (for [chat response]
+           (doall (for [chat (:transcript response)]
                     (chat-line chat)))]]]
         [:div {:class "px-4 py-4 sm:px-6"}
          [:div {:class "flex justify-end"}
