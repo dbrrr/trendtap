@@ -12,6 +12,11 @@
                    :details [:lift details]}])
       (hh/returning [:*])))
 
+(defn all [{:keys [tenant-id] :as _ctx}]
+  (-> (hh/select :*)
+      (hh/from silo-table)
+      (hh/where [:= :tenant-id (parse-uuid tenant-id)])))
+
 (defn delete [{:keys [tenant-id] :as _ctx} silo]
   (-> (hh/delete-from silo-table)
       (hh/where [:and

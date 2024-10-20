@@ -25,9 +25,9 @@
                  [:= :id (parse-uuid actor-id)]
                  [:= :tenant-id (parse-uuid tenant-id)]])))
 
-(defn by-silo-id [{:keys [tenant-id] :as _ctx} silo-id]
+(defn by-silo-ids [{:keys [tenant-id] :as _ctx} silo-ids]
   (-> (hh/select :*)
       (hh/from actor-table)
       (hh/where [:and
-                 [:= :silo-id (parse-uuid silo-id)]
+                 [:in :silo-id (map parse-uuid silo-ids)]
                  [:= :tenant-id (parse-uuid tenant-id)]])))

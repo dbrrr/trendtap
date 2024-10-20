@@ -11,6 +11,9 @@
 (defn create! [ctx info]
   (database/execute-one! ctx (repo/create ctx info)))
 
+(defn all! [ctx]
+  (database/execute! ctx (repo/all ctx)))
+
 (defn delete! [ctx silo]
   (database/execute-one! ctx (repo/delete ctx silo)))
 

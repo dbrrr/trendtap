@@ -27,8 +27,10 @@
     result))
 
 (defn ingest-demo-format [{:keys [transcript] :as demo-transcript}]
-  (let [actors (set (map :name transcript))
-        transcript (apply str (map #(format "%s: %s\n" (:name %) (:text %))
+  (let [actors (set (map :participant transcript))
+        transcript (apply str (map #(format "%s: %s\n" (:participant %) (:text %))
                                    transcript))]
     (blob-store/save! {:actors actors
-                       :transcript transcript})))
+                       :transcript transcript})
+    {:actors actors
+     :transcript transcript}))

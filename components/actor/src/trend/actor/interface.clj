@@ -12,5 +12,8 @@
 (defn by-id! [ctx actor-id]
   (database/execute-one! ctx (repo/by-id ctx actor-id)))
 
+(defn by-silos! [ctx silos]
+  (database/execute! ctx (repo/by-silo-ids ctx (map util/id silos))))
+
 (defn by-silo! [ctx silo]
-  (database/execute! ctx (repo/by-silo-id ctx (util/id silo))))
+  (database/execute! ctx (repo/by-silo-ids ctx [(util/id silo)])))

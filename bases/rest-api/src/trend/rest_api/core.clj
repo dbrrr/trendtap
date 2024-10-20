@@ -7,7 +7,9 @@
    [trend.rest-api.login :as login]
    [trend.rest-api.link :as link]
    [trend.rest-api.app :as app]
-   [trend.rest-api.demo :as demo]))
+   [trend.rest-api.demo :as demo]
+   [trend.silo.interface :as silo]
+   [trend.actor.interface :as actor]))
 
 (defn hyperscript [_req]
   {:status 200
@@ -39,39 +41,45 @@
    :headers {"Content-type" "text/css"}
    :body (slurp "bases/rest-api/resources/rest-api/tailwind.js")})
 
+(defn silos-as-graph [req]
+  (let [silos (silo/all! (:ctx req))
+        actors (actor/by-silos! (:ctx req) silos)]
+    {:body actors
+     :status 200}))
+
 ;; NOTE don't change this name, or link/to will break
 (link/routes route-tree
   (ring/router
    [["/" {:get {:handler (fn [req] req)}}]
     ["/app" {:name :link/app
-             :get {:handler (fn [req]
-                              (app/load-it req)
-
-                              )}}]
+             :get  {:handler (fn [req]
+                               (app/load-it req))}}]
     ["/login" {:name :link/login
-               :get {:handler (fn [req]
-                                (login/login-page (link/to :link/login
-                                                           :link/signup)))}
+               :get  {:handler (fn [req]
+                                 (login/login-page (link/to :link/login
+                                                            :link/signup)))}
                :post {:handler (fn [req]
                                  ;; TODO login doesn't actually do anything currently
-                                 {:status 301
+                                 {:status  301
                                   :headers {"Location" "/app"}})}}]
     ["/signup" {:name :link/signup
-                :get {:handler (fn [req] (signup/signup-form (link/to :link/signup)))}
-                :post {:handler (fn [req] (signup/new-user req))
+                :get  {:handler (fn [req] (signup/signup-form (link/to :link/signup)))}
+                :post {:handler    (fn [req] (signup/new-user req))
                        :parameters {:form any?}}}]
+    ["/silo/activity/" {:name    :link/silo-activity
+                        :handler silos-as-graph}]
     ["/silo/example"
      ["" {:name :link/silo-example
-          :get {:handler (fn [req] (demo/silo (link/to :link/get-actor-row
-                                                       :link/silo-example)))}
-          :post {:handler (fn [{{form-params :form} :parameters :as req}]
+          :get  {:handler (fn [req] (demo/silo (link/to :link/get-actor-row
+                                                        :link/silo-example)))}
+          :post {:handler    (fn [{{form-params :form} :parameters :as req}]
                             (demo/generate (:ctx req)
                                            (link/to :link/app)
                                            form-params))
                  :parameters {:form any?}}}]
 
      ["/actor" {:name :link/get-actor-row
-                :get {:handler (fn [req] (demo/add-actor (link/to :link/get-actor-row)))}}]]
+                :get  {:handler (fn [req] (demo/add-actor (link/to :link/get-actor-row)))}}]]
 
     ;; Unnecessary stuff
     ["/htmx-library" {:get {:handler (fn [req] (htmx-library req))}}]
@@ -80,7 +88,7 @@
     ["/hyperscript" {:get {:handler (fn [req] (hyperscript req))}}]
     ["/htmx-sse" {:get {:handler (fn [req] (htmx-sse req))}}]
     ["/tailwind" {:get {:handler (fn [req] (tailwind req))}}]]
-   {:data {:coercion malli-coercion/coercion
+   {:data {:coercion   malli-coercion/coercion
            :middleware middleware/stack}}))
 
 (defn default-404 [req]
