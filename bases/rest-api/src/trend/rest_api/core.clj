@@ -10,7 +10,8 @@
    [trend.rest-api.demo :as demo]
    [trend.silo.interface :as silo]
    [trend.actor.interface :as actor]
-   [clojure.data.json :as json]))
+   [clojure.data.json :as json]
+   [trend.util.interface :as util]))
 
 (defn hyperscript [_req]
   {:status 200
@@ -46,10 +47,12 @@
   (let [silos (silo/all! (:ctx req))
         actors (actor/by-silos! (:ctx req) silos)
         silos-used-by-actors (set (map :silo-id actors))
-        silo-nodes (map #(hash-map :data {:id %}) silos-used-by-actors)
-        actor-nodes (map #(hash-map :data {:id (-> % :details :description)}) actors)
+        silo-nodes (map #(hash-map :data {:id %
+                                          :label "Meeting"}) silos-used-by-actors)
+        actor-nodes (map #(hash-map :data {:id (util/id %)
+                                           :label (-> % :details :description)}) actors)
         meeting-edges (map #(hash-map :data {:id (str (rand-int 10000))
-                                             :source (-> % :details :description)
+                                             :source (util/id %)
                                              :target (:silo-id %)})
                            actors)]
     {:body (json/write-str (vec (concat silo-nodes actor-nodes meeting-edges)))
@@ -76,7 +79,7 @@
                 :post {:handler    (fn [req] (signup/new-user req))
                        :parameters {:form any?}}}]
     ["/silo/activity/" {:name    :link/silo-activity
-                        :handler silos-as-graph}]
+                        :handler (fn [req] (silos-as-graph req))}]
     ["/silo/example"
      ["" {:name :link/silo-example
           :get  {:handler (fn [req] (demo/silo (link/to :link/get-actor-row
