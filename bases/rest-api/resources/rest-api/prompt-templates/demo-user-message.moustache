@@ -1,0 +1,6 @@
+A high-level summary of the meeting can be described as follows: {{description}}.
+
+The participants of the meeting were:
+{{#participants}}
+  Name: {{name}}, who had the following high-level perspective: {{perspective}}
+{{/participants}}

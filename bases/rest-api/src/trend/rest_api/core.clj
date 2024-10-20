@@ -63,7 +63,9 @@
      ["" {:name :link/silo-example
           :get {:handler (fn [req] (demo/silo (link/to :link/get-actor-row
                                                        :link/silo-example)))}
-          :post {:handler (fn [req] (demo/generate {}))}}]
+          :post {:handler (fn [{{form-params :form} :parameters}]
+                            (demo/generate {} form-params))
+                 :parameters {:form any?}}}]
 
      ["/actor" {:name :link/get-actor-row
                 :get {:handler (fn [req] (demo/add-actor (link/to :link/get-actor-row)))}}]]

@@ -1,5 +1,9 @@
 (ns trend.rest-api.demo
-  (:require [trend.rest-api.common :as common]))
+  (:require
+   [clojure.data.json :as json]
+   [clojure.string :as str]
+   [trend.completion.interface :as completion]
+   [trend.rest-api.common :as common]))
 
 (defn add-actor-row [get-actor-row-link]
   [:tr {:id "add-actor"}
@@ -24,8 +28,8 @@
         content-label (if current-user?
                         "What did you say?"
                         "What did they say?")
-        name-input-id (str "name-" id)
-        perspective-input-id (str "perspective-" id)]
+        name-input-id (str "name:" id)
+        perspective-input-id (str "perspective:" id)]
     [:tr
      [:td {:class "whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-0"}
       [:div {:class "flex items-center"}
@@ -86,21 +90,66 @@
                           :name "David Russell"
                           :current-user? true})
               (actor-row {:id (random-uuid)})
-              (add-actor-row (:link/get-actor-row links))]]]]]]
+              (add-actor-row (:link/get-actor-row links))]]]]]]]
 
+       [:div {:class "px-4 py-4 sm:px-6"}
+        [:div {:class "flex justify-end"}
+         [:button {:type "submit",
+                   :_ "on click set my.innerText to 'Generating...'"
+                   :class "rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"} "Generate example"]]]]]]]))
+
+(defn- ->participants [participants]
+  (vals (reduce-kv (fn [acc element-id element-value]
+                     (let [[t k] (str/split (name element-id) #":")]
+                       (assoc-in acc [(keyword k) (keyword t)] element-value)))
+                   {}
+                   participants)))
+
+(def demo-system-message-template "bases/rest-api/resources/rest-api/prompt-templates/demo-system-message.moustache")
+(def demo-user-message-template "bases/rest-api/resources/rest-api/prompt-templates/demo-user-message.moustache")
+
+(defn- chat-line [{:keys [participant text]}]
+[:li
+   [:div {:class "relative pb-8"}
+    [:span {:class "absolute left-5 top-5 -ml-px h-full w-0.5 bg-gray-200", :aria-hidden "true"}]
+    [:div {:class "relative flex items-start space-x-3"}
+     [:div
+      [:div {:class "relative px-1"}
+       [:div {:class "flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 ring-8 ring-white"}
+        [:svg {:class "h-5 w-5 text-gray-500", :viewbox "0 0 20 20", :fill "currentColor", :aria-hidden "true", :data-slot "icon"}
+         [:path {:fill-rule "evenodd", :d "M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-5.5-2.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0ZM10 12a5.99 5.99 0 0 0-4.793 2.39A6.483 6.483 0 0 0 10 16.5a6.483 6.483 0 0 0 4.793-2.11A5.99 5.99 0 0 0 10 12Z", :clip-rule "evenodd"}]]]]]
+     [:div {:class "min-w-0 flex-1"}
+      [:div
+       [:div {:class "text-sm"}
+        [:a {:href "#", :class "font-medium text-gray-900"} participant]]]
+      [:div {:class "mt-2 text-sm text-gray-700"}
+       [:p text]]]]]])
+
+(defn generate [links form-params]
+  (let [participants (->participants (dissoc form-params :description))
+        demo (completion/submit
+              (concat [{:role "system" :content (completion/render-prompt demo-system-message-template {})}]
+                      [{:role "user" :content (completion/render-prompt demo-user-message-template
+                                                                        {:description (:description form-params)
+                                                                         :participants participants})}]))
+        response (:transcript (json/read-str demo :key-fn keyword))]
+    (common/render-and-respond
+     [:html
+      common/head
+      [:body
+       [:div {:class "mx-auto max-w-2xl mt-20"}
+        [:div {:class "overflow-hidden rounded-lg bg-white shadow p-10"}
+         [:div {:class "px-4 sm:p-6"}
+          [:div
+          [:h2 {:class "text-3xl font-bold tracking-tight text-gray-900"} "Your short example meeting"]]]
+         [:div {:class "flow-root mt-5"}
+          [:ul {:role "list", :class "-mb-8"}
+           (doall (for [chat response]
+                    (chat-line chat)))]]]
         [:div {:class "px-4 py-4 sm:px-6"}
          [:div {:class "flex justify-end"}
           [:button {:type "submit",
-                    :_ "on click set my.innerText to 'Loading...'"
-                    :class "rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"} "Generate example"]]]]]]]]))
+                    :class "rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"}
+           "Save & Continue"]]]
 
-(defn generate [links]
-  (common/render-and-respond
-   [:html
-    common/head
-    [:body
-     [:div {:class "mx-auto max-w-2xl mt-20"}
-      [:div {:class "divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow"}
-
-       ]
-      ]]]))
+         ]]])))

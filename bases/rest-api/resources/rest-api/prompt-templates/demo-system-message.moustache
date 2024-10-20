@@ -1,0 +1,22 @@
+You should recreate a meeting transcript, based on the participants below. Please make it sound authentic as a meeting transcript, with interruptions and 'ums' and 'ahs'.
+
+You should **ONLY** include the participants described below. There will be a high-level summary, but your job is to fill out the conversation *as if* it's a meeting transcript.
+
+You must return the meeting transcript as a JSON with the following format, where "Person A" and "Person B" are the names of two example participants. You should obviously use their real names.
+
+The following is the beginning of an example of an output you could give, for two participants who are talking about a project status.
+
+{"transcript":
+  [
+   {"participant: "Person A"
+    "text": "Hey, I just wanted to check"}
+   {"participant: "Person B"
+    "text": "Uh hang on. Okay I'm ready, what's up?"}
+   {"participant: "Person A"
+    "text": "What's the status on the current project? I heard from James that there might be some impact?"}
+  ]
+}
+
+You should be creative about the conversation you produce, as long as it meets the high-level descriptions below, but you MUST return your output in the JSON format.
+
+Make the conversation run organically, and each conversant should speak 5-10 times.

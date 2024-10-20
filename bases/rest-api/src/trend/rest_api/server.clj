@@ -30,7 +30,7 @@
     (println "No server")))
 
 (start! 6003)
-(stop!)
+#_(stop!)
 
 (defn -main [& _args]
   (start! (Integer/valueOf
