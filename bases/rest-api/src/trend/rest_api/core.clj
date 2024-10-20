@@ -9,7 +9,8 @@
    [trend.rest-api.app :as app]
    [trend.rest-api.demo :as demo]
    [trend.silo.interface :as silo]
-   [trend.actor.interface :as actor]))
+   [trend.actor.interface :as actor]
+   [clojure.data.json :as json]))
 
 (defn hyperscript [_req]
   {:status 200
@@ -43,8 +44,16 @@
 
 (defn silos-as-graph [req]
   (let [silos (silo/all! (:ctx req))
-        actors (actor/by-silos! (:ctx req) silos)]
-    {:body actors
+        actors (actor/by-silos! (:ctx req) silos)
+        silos-used-by-actors (set (map :silo-id actors))
+        silo-nodes (map #(hash-map :data {:id %}) silos-used-by-actors)
+        actor-nodes (map #(hash-map :data {:id (-> % :details :description)}) actors)
+        meeting-edges (map #(hash-map :data {:id (str (rand-int 10000))
+                                             :source (-> % :details :description)
+                                             :target (:silo-id %)})
+                           actors)]
+    {:body (json/write-str (vec (concat silo-nodes actor-nodes meeting-edges)))
+     :headers {"Content-Type" "application/json"}
      :status 200}))
 
 ;; NOTE don't change this name, or link/to will break
