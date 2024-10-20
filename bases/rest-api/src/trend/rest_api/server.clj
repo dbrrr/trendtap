@@ -4,7 +4,9 @@
    [trend.rest-api.core :as core]
    [com.stuartsierra.component :as component]
    [trend.database.interface :as db]
-   [trend.rest-api.system :as system]))
+   [trend.rest-api.system :as system]
+   [trend.tenant.interface :as tenant]
+   [trend.util.interface :as util]))
 
 (defonce ^:private server-ref (atom nil))
 
@@ -14,7 +16,11 @@
     (println "server already running!")
     (do
       (println "Starting server on port: " port)
-      (reset! system/system {:db (db/start)})
+      (let [db (db/start)
+            tenant (or (tenant/find-first! {:db db})
+                       (tenant/create! {:db db} "My tenant"))]
+        (reset! system/system {:db db
+                               :tenant-id (util/id tenant)}))
       (reset! server-ref
               (http-kit/run-server core/handler
                                    {:port port
