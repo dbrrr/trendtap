@@ -43,7 +43,8 @@
 (link/routes route-tree
   (ring/router
    [["/" {:get {:handler (fn [req] req)}}]
-    ["/app" {:get {:handler (fn [req]
+    ["/app" {:name :link/app
+             :get {:handler (fn [req]
                               (app/load-it req)
 
                               )}}]
@@ -64,7 +65,7 @@
           :get {:handler (fn [req] (demo/silo (link/to :link/get-actor-row
                                                        :link/silo-example)))}
           :post {:handler (fn [{{form-params :form} :parameters}]
-                            (demo/generate {} form-params))
+                            (demo/generate (link/to :link/app) form-params))
                  :parameters {:form any?}}}]
 
      ["/actor" {:name :link/get-actor-row
