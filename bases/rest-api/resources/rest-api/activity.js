@@ -5,7 +5,7 @@ function renderNode(ele) {
   const iconPath = "M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z";
   const iconColor = '#ffffff';
   const size = 512; // may need to calculate this yourself
-  const iconResize = 200; // adjust this for more "padding" (bigger number = more smaller icon)
+  const iconResize = 480; // adjust this for more "padding" (bigger number = more smaller icon)
 
   const width = size;
   const height = size;
@@ -59,10 +59,9 @@ var cy = cytoscape({
       style: {
         'background-color': '#666',
         'background-image': (ele) => renderNode(ele).svg,
-        width: (ele) => renderNode(ele).width,
-        height: (ele) => renderNode(ele).height,
-        'label': 'data(label)',
-        'font-size': "50px"
+        width: 64,
+        height: 64,
+        'label': 'data(label)'
       }
     },
 
