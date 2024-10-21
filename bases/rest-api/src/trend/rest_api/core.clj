@@ -48,8 +48,10 @@
         actors (actor/by-silos! (:ctx req) silos)
         silos-used-by-actors (set (map :silo-id actors))
         silo-nodes (map #(hash-map :data {:id %
+                                          :nodeType "silo"
                                           :label "Meeting"}) silos-used-by-actors)
         actor-nodes (map #(hash-map :data {:id (util/id %)
+                                           :nodeType "actor"
                                            :label (-> % :details :description)}) actors)
         meeting-edges (map #(hash-map :data {:id (str (rand-int 10000))
                                              :source (util/id %)
