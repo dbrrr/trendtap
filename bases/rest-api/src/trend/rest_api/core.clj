@@ -47,6 +47,7 @@
   (let [silos (silo/all! (:ctx req))
         actors (actor/by-silos! (:ctx req) silos)
         silos-used-by-actors (set (map :silo-id actors))
+        ;; TODO update these to uses classes instead of custom attributes
         silo-nodes (map #(hash-map :data {:id %
                                           :nodeType "silo"
                                           :label "Meeting"}) silos-used-by-actors)
