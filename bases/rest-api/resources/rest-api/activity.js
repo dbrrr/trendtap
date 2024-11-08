@@ -94,14 +94,16 @@ var cy = cytoscape({
         width: (ele) => renderNode(ele).width,
         height: (ele) => renderNode(ele).height,
         'label': 'data(label)',
-        'font-size': '6px',
-        "font-color": "#4338ca",
-        "text-background-color": "rgb(238,242,255,1)",
+        'font-size': '3px',
+        'font-weight': '900',
+        "color": "rgb(67,56,202)",
+        "text-background-color": "rgb(238,242,255)",
+        "text-background-opacity": "1",
         "text-background-shape": "roundrectangle",
-        "text-border-color": "rgb(67,56,202,0.1)",
-        'text-background-padding': '2px',
-        "text-border-width": 1,
-        "text-border-opacity": 1
+        "text-border-color": "rgb(59,130,246,0.5)",
+        'text-background-padding': '1.5px',
+        "text-border-width": 0.4,
+        "text-border-opacity": 0.5,
       }
     },
 

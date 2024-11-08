@@ -6,7 +6,8 @@
 (defn new-user [{{{:keys [first-name last-name email]} :form} :parameters
                  ctx :ctx}]
   (let [account (account/create! ctx email {:first-name first-name :last-name last-name})]
-    (common/render-and-respond
+    account
+    #_(common/render-and-respond
      [:html
       common/head
       [:body

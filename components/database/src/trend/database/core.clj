@@ -139,4 +139,4 @@
 
 (defn start []
   (component/start
-   (map->Database {:db-url "postgresql://postgres:psql@localhost:5432/trendtap"})))
+   (map->Database {:db-url "postgresql://postgres:psql@localhost:9999/trendtap"})))

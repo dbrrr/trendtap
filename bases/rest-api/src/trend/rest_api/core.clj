@@ -76,10 +76,13 @@
                :post {:handler (fn [req]
                                  ;; TODO login doesn't actually do anything currently
                                  {:status  301
-                                  :headers {"Location" "/app"}})}}]
+                                  :headers {"Location" "/signup"}})}}]
     ["/signup" {:name :link/signup
                 :get  {:handler (fn [req] (signup/signup-form (link/to :link/signup)))}
-                :post {:handler    (fn [req] (signup/new-user req))
+                :post {:handler (fn [req]
+                                  (signup/new-user req)
+                                  {:status 301
+                                   :headers {"Location" "/"}})
                        :parameters {:form any?}}}]
     ["/silo/activity/" {:name    :link/silo-activity
                         :handler (fn [req] (silos-as-graph req))}]
