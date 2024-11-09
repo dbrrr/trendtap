@@ -6,89 +6,81 @@
    [medley.core :as medley]
    [trend.util.interface :as util]))
 
+(defn- insight-panel-actor [actor]
+  [:li {:class "group flex cursor-default select-none items-center rounded-md p-2", :id "option-1", :role "option", :tabindex "-1"}
+   [:span {:class "inline-block h-6 w-6 overflow-hidden rounded-full bg-gray-100"}
+    [:svg {:class "h-full w-full text-gray-300", :fill "currentColor", :viewbox "0 0 24 24"}
+     [:path {:d "M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z"}]]]
+   [:span {:class "ml-3 flex-auto truncate"} actor]
+   [:svg {:class "ml-3 hidden h-5 w-5 flex-none text-gray-400", :viewbox "0 0 20 20", :fill "currentColor", :aria-hidden "true", :data-slot "icon"}
+    [:path {:fill-rule "evenodd", :d "M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z", :clip-rule "evenodd"}]]])
+
 (defn- insight-panel [silo silo-id->actor-name]
-  [:div {:class "z-10 mx-auto max-w-3xl transform divide-y divide-gray-100 overflow-hidden rounded-xl opacity-80 bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all"}
-   [:div {:class "relative p-5 flex"}
-    [:h1 {:class "text-xl font-semibold leading-6 text-gray-900"} "Meeting Title"]
-    [:div {:class "ml-auto"}
-     [:div {:class "-mx-1.5 -my-1.5"}
-      [:button {:type "button",
-                :id "silo-detail-floating-window-close"
-                :class "inline-flex rounded-md bg-gray-50 p-1.5 text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50"
-                :_ "on click add .hidden to #silo-detail-floating-window"}
-       [:span {:class "sr-only"} "Dismiss"]
-       [:svg {:class "h-5 w-5", :viewbox "0 0 20 20", :fill "currentColor", :aria-hidden "true", :data-slot "icon"}
-        [:path {:d "M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"}]]]]]]
+  (let [actors (get silo-id->actor-name (util/id silo))]
+    [:div {:class "z-10 mx-auto max-w-3xl transform divide-y divide-gray-100 overflow-hidden rounded-xl opacity-90 bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all"}
+     [:div {:class "relative p-5 flex"}
+      [:h1 {:class "text-xl font-semibold leading-6 text-gray-900"} "Meeting Title"]
+      [:div {:class "ml-auto"}
+       [:div {:class "-mx-1.5 -my-1.5"}
+        [:button {:type "button",
+                  :id "silo-detail-floating-window-close"
+                  :class "inline-flex rounded-md bg-gray-50 p-1.5 text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50"
+                  :_ "on click add .hidden to #silo-detail-floating-window"}
+         [:span {:class "sr-only"} "Dismiss"]
+         [:svg {:class "h-5 w-5", :viewbox "0 0 20 20", :fill "currentColor", :aria-hidden "true", :data-slot "icon"}
+          [:path {:d "M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"}]]]]]]
+     [:div {:class "slide-it" :id "swap-me"}
+      [:div {:class "px-6 py-14 text-center text-sm sm:px-14"}
+       [:svg {:class "mx-auto h-6 w-6 text-gray-400", :fill "none", :viewbox "0 0 24 24", :stroke-width "1.5", :stroke "currentColor", :aria-hidden "true", :data-slot "icon"}
+        [:path {:stroke-linecap "round", :stroke-linejoin "round", :d "M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"}]]
+       [:p {:class "mt-4 font-semibold text-gray-900"} "No people found"]
+       [:p {:class "mt-2 text-gray-500"} "We couldn’t find anything with that term. Please try again."]]
+      [:div {:class "flex transform-gpu divide-x divide-gray-100"}
+       [:div {:class "max-h-96 min-w-0 flex-auto scroll-py-4 overflow-y-auto px-6 py-4 sm:h-96"}
+        [:h2 {:class "mb-4 mt-2 text-xs font-semibold text-gray-500"} "Participants"]
+        [:ul {:class "-mx-2 text-sm text-gray-700", :id "options", :role "listbox"}
+         (doall (for [actor actors]
+                  (insight-panel-actor actor)))]]
+       [:div {:class "hidden h-96 w-1/2 flex-none flex-col divide-y divide-gray-100 overflow-y-auto sm:flex"}
+        [:div {:class "flex-none p-6 text-center"}
+         [:span {:class "inline-block h-14 w-14 overflow-hidden rounded-full bg-gray-100"}
+          [:svg {:class "h-full w-full text-gray-300", :fill "currentColor", :viewbox "0 0 24 24"}
+           [:path {:d "M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z"}]]]
+         [:h2 {:class "mt-3 font-semibold text-gray-900"} "Tom Cook"]
+         [:p {:class "text-sm/6 text-gray-500"} "Director, Product Development"]]
+        [:div {:class "flex flex-auto flex-col justify-between p-6"}
+         [:button {:type "button",
+                   :class "mt-6 w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                   :hx-get "/new-content"
+                   :hx-swap "innerHTML transition:true"
+                   :hx-target "#swap-me"}
+          "Earn Points"]]]]]]))
+
+(defn moar [req]
+  (common/render-and-respond
    [:div {:class "px-6 py-14 text-center text-sm sm:px-14"}
     [:svg {:class "mx-auto h-6 w-6 text-gray-400", :fill "none", :viewbox "0 0 24 24", :stroke-width "1.5", :stroke "currentColor", :aria-hidden "true", :data-slot "icon"}
      [:path {:stroke-linecap "round", :stroke-linejoin "round", :d "M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"}]]
     [:p {:class "mt-4 font-semibold text-gray-900"} "No people found"]
-    [:p {:class "mt-2 text-gray-500"} "We couldn’t find anything with that term. Please try again."]]
-   [:div {:class "flex transform-gpu divide-x divide-gray-100"}
-    [:div {:class "max-h-96 min-w-0 flex-auto scroll-py-4 overflow-y-auto px-6 py-4 sm:h-96"}
-     [:h2 {:class "mb-4 mt-2 text-xs font-semibold text-gray-500"} "Participants"]
-     [:ul {:class "-mx-2 text-sm text-gray-700", :id "recent", :role "listbox"}
-      [:li {:class "group flex cursor-default select-none items-center rounded-md p-2", :id "recent-1", :role "option", :tabindex "-1"}
-       [:img {:src "https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", :class "h-6 w-6 flex-none rounded-full"}]
-       [:span {:class "ml-3 flex-auto truncate"} "Floyd Miles"]
-       [:svg {:class "ml-3 hidden h-5 w-5 flex-none text-gray-400", :viewbox "0 0 20 20", :fill "currentColor", :aria-hidden "true", :data-slot "icon"}
-        [:path {:fill-rule "evenodd", :d "M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z", :clip-rule "evenodd"}]]]]
-     [:ul {:class "-mx-2 text-sm text-gray-700", :id "options", :role "listbox"}
-      [:li {:class "group flex cursor-default select-none items-center rounded-md p-2", :id "option-1", :role "option", :tabindex "-1"}
-       [:img {:src "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", :class "h-6 w-6 flex-none rounded-full"}]
-       [:span {:class "ml-3 flex-auto truncate"} "Tom Cook"]
-       [:svg {:class "ml-3 hidden h-5 w-5 flex-none text-gray-400", :viewbox "0 0 20 20", :fill "currentColor", :aria-hidden "true", :data-slot "icon"}
-        [:path {:fill-rule "evenodd", :d "M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z", :clip-rule "evenodd"}]]]
-      [:li {:class "group flex cursor-default select-none items-center rounded-md p-2", :id "option-2", :role "option", :tabindex "-1"}
-       [:img {:src "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", :class "h-6 w-6 flex-none rounded-full"}]
-       [:span {:class "ml-3 flex-auto truncate"} "Courtney Henry"]
-       [:svg {:class "ml-3 hidden h-5 w-5 flex-none text-gray-400", :viewbox "0 0 20 20", :fill "currentColor", :aria-hidden "true", :data-slot "icon"}
-        [:path {:fill-rule "evenodd", :d "M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z", :clip-rule "evenodd"}]]]
-      [:li {:class "group flex cursor-default select-none items-center rounded-md p-2", :id "option-3", :role "option", :tabindex "-1"}
-       [:img {:src "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", :class "h-6 w-6 flex-none rounded-full"}]
-       [:span {:class "ml-3 flex-auto truncate"} "Dries Vincent"]
-       [:svg {:class "ml-3 hidden h-5 w-5 flex-none text-gray-400", :viewbox "0 0 20 20", :fill "currentColor", :aria-hidden "true", :data-slot "icon"}
-        [:path {:fill-rule "evenodd", :d "M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z", :clip-rule "evenodd"}]]]
-      [:li {:class "group flex cursor-default select-none items-center rounded-md p-2", :id "option-4", :role "option", :tabindex "-1"}
-       [:img {:src "https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", :class "h-6 w-6 flex-none rounded-full"}]
-       [:span {:class "ml-3 flex-auto truncate"} "Kristin Watson"]
-       [:svg {:class "ml-3 hidden h-5 w-5 flex-none text-gray-400", :viewbox "0 0 20 20", :fill "currentColor", :aria-hidden "true", :data-slot "icon"}
-        [:path {:fill-rule "evenodd", :d "M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z", :clip-rule "evenodd"}]]]
-      [:li {:class "group flex cursor-default select-none items-center rounded-md p-2", :id "option-5", :role "option", :tabindex "-1"}
-       [:img {:src "https://images.unsplash.com/photo-1517070208541-6ddc4d3efbcb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", :class "h-6 w-6 flex-none rounded-full"}]
-       [:span {:class "ml-3 flex-auto truncate"} "Jeffrey Webb"]
-       [:svg {:class "ml-3 hidden h-5 w-5 flex-none text-gray-400", :viewbox "0 0 20 20", :fill "currentColor", :aria-hidden "true", :data-slot "icon"}
-        [:path {:fill-rule "evenodd", :d "M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z", :clip-rule "evenodd"}]]]]]
-    [:div {:class "hidden h-96 w-1/2 flex-none flex-col divide-y divide-gray-100 overflow-y-auto sm:flex"}
-     [:div {:class "flex-none p-6 text-center"}
-      [:img {:src "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", :class "mx-auto h-16 w-16 rounded-full"}]
-      [:h2 {:class "mt-3 font-semibold text-gray-900"} "Tom Cook"]
-      [:p {:class "text-sm/6 text-gray-500"} "Director, Product Development"]]
-     [:div {:class "flex flex-auto flex-col justify-between p-6"}
-      [:button {:type "button", :class "mt-6 w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"} "Send message"]]]]])
+    [:p {:class "mt-2 text-gray-500"} "We couldn’t find anything with that term. Please try again."]]))
 
 (defn- silo-item [silo silo-id->actor-name]
-  [:li {:class "overflow-hidden rounded-xl border border-gray-200 bg-white siloItem"
+  [:li {:class "flex items-center justify-between gap-x-6 py-5 siloItem"
         :id (util/id silo)
         :style {"z-index" 200}}
-   [:div {:class "flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-2"}
-    [:img {:src "https://tailwindui.com/plus/img/logos/48x48/tuple.svg",
-           :alt "Tuple",
-           :class "h-10 w-10 flex-none rounded-lg bg-white object-cover ring-1 ring-gray-900/10"}]
-    [:div {:class "text-sm font-medium leading-6 text-gray-900"} "Tuple"]]
-   [:dl {:class "-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6"}
-    [:div {:class "flex justify-between gap-x-4 py-3"}
-     [:dt {:class "text-gray-500"} "Participants"]
-     [:dd {:class "text-gray-700"}
-      (get silo-id->actor-name (util/id silo))
-      #_[:time {:datetime "2022-12-13"} "December 13, 2022"]]]
-    [:div {:class "flex justify-between gap-x-4 py-3"}
-     [:dt {:class "text-gray-500"} "Tags"]
-     [:dd {:class "flex items-start gap-x-2 overflow-x-scroll"}
-      [:div {:class "rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/10"} "Permissions"]
-      [:div {:class "rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/10"} "Project Thunder"]
-      [:div {:class "rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-700 ring-1 ring-inset ring-gray-600/10"} "Overdue"]
-      [:div {:class "rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-700 ring-1 ring-inset ring-gray-600/10"} "Overdue"]]]]])
+   [:div {:class "min-w-0"}
+    [:div {:class "flex items-start gap-x-3"}
+     [:p {:class "text-sm/6 font-semibold text-gray-900"} "New benefits plan"]
+     [:p {:class "mt-0.5 whitespace-nowrap rounded-md bg-gray-50 px-1.5 py-0.5 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"} "In progress"]]
+    [:div {:class "mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500"}
+     [:p {:class "whitespace-nowrap"}
+      [:time {:datetime "2023-05-05T00:00Z"} "May 5, 2023"]]
+     [:svg {:viewbox "0 0 2 2", :class "h-0.5 w-0.5 fill-current"}
+      [:circle {:cx "1", :cy "1", :r "1"}]]
+     [:p {:class "truncate"} "4 Participants"]]]
+   [:div {:class "flex flex-none items-center gap-x-4"}
+    [:a {:href "#", :class "hidden rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:block"} "View project"
+     [:span {:class "sr-only"} ", New benefits plan"]]]])
 
 (defn load-it [{:keys [ctx] :as req}]
   (let [silos (silo/all! ctx)
@@ -159,7 +151,7 @@
            [:div {:id "silo-detail-floating-window"
                   :class "z-10 hidden"
                   :style {"position" "absolute"}}
-            (insight-panel "" "")]
+            (insight-panel (first silos) silo-id->actor-name)]
 
            [:div {:id "activity-container"
                   :style {"width" "100%"
@@ -168,8 +160,9 @@
                           "z-index" 0
                           "display" "block"}}]
            [:canvas {:id "graphCanvas"}]
-           [:div {:class "p-5 rounded-lg m-8 bg-gray-100 bg-opacity-80 shadow-sm ring-1 ring-gray-900/5 lg:col-start-3 lg:row-end-1 overflow-y-scroll" :style {"z-index" 100 "height" "800px"}}
-            [:ul {:role "list", :class "grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-1 xl:gap-x-8 w-96"}
+           [:div {:class "p-5 bg-opacity-80 shadow-sm ring-1 ring-gray-900/5 lg:col-start-3 lg:row-end-1 overflow-y-scroll" :style {"z-index" 100 "height" "800px"}}
+            [:ul {:role "list",
+                  :class "divide-y divide-gray-100"}
              (doall
               (for [silo (reverse (sort-by :created silos))]
                 (silo-item silo silo-id->actor-name)))]]]]

@@ -113,6 +113,11 @@
      ["/app" {:name :link/app
               :get  {:handler (fn [req]
                                 (app/load-it req))}}]
+     ["/new-content" {:get {:handler (fn [req]
+                                       (app/moar req)
+
+
+                                       )}}]
      ["/silo/activity/" {:name    :link/silo-activity
                          :handler (fn [req] (silos-as-graph req))}]
      ["/silo/example"
