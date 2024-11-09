@@ -7,9 +7,18 @@
    [trend.util.interface :as util]))
 
 (defn- insight-panel [silo silo-id->actor-name]
-  [:div {:class "z-10 mx-auto max-w-3xl transform divide-y divide-gray-100 overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all"}
-   [:div {:class "relative p-5"}
-    [:h1 {:class "text-xl font-semibold leading-6 text-gray-900"} "Meeting Title"]]
+  [:div {:class "z-10 mx-auto max-w-3xl transform divide-y divide-gray-100 overflow-hidden rounded-xl opacity-80 bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all"}
+   [:div {:class "relative p-5 flex"}
+    [:h1 {:class "text-xl font-semibold leading-6 text-gray-900"} "Meeting Title"]
+    [:div {:class "ml-auto"}
+     [:div {:class "-mx-1.5 -my-1.5"}
+      [:button {:type "button",
+                :id "silo-detail-floating-window-close"
+                :class "inline-flex rounded-md bg-gray-50 p-1.5 text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50"
+                :_ "on click add .hidden to #silo-detail-floating-window"}
+       [:span {:class "sr-only"} "Dismiss"]
+       [:svg {:class "h-5 w-5", :viewbox "0 0 20 20", :fill "currentColor", :aria-hidden "true", :data-slot "icon"}
+        [:path {:d "M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"}]]]]]]
    [:div {:class "px-6 py-14 text-center text-sm sm:px-14"}
     [:svg {:class "mx-auto h-6 w-6 text-gray-400", :fill "none", :viewbox "0 0 24 24", :stroke-width "1.5", :stroke "currentColor", :aria-hidden "true", :data-slot "icon"}
      [:path {:stroke-linecap "round", :stroke-linejoin "round", :d "M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"}]]
@@ -93,7 +102,7 @@
       [:script {:type "module" :src "/activity"}]
       [:body
        [:div {:class "min-h-full"}
-        [:nav {:class "bg-gray-800"}
+        [:nav {:class "bg-gray-800 z-20"}
          [:div {:class "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"}
           [:div {:class "flex h-16 items-center justify-between"}
            [:div {:class "flex items-center"}
@@ -141,14 +150,14 @@
              [:span {:class "sr-only"} "View notifications"]
              [:svg {:class "h-6 w-6", :fill "none", :viewbox "0 0 24 24", :stroke-width "1.5", :stroke "currentColor", :aria-hidden "true", :data-slot "icon"}
               [:path {:stroke-linecap "round", :stroke-linejoin "round", :d "M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"}]]]]]]]
-        [:header {:class "bg-white shadow-sm"}
+        [:header {:class "bg-white shadow-sm z-20"}
          [:div {:class "mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8"}
           [:h1 {:class "text-lg font-semibold leading-6 text-gray-900"} "Community"]]]
         [:main
          [:div {:class "mx-auto"}
           [:div {:class "mx-auto grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-2"}
            [:div {:id "silo-detail-floating-window"
-                  :class "z-10"
+                  :class "z-10 hidden"
                   :style {"position" "absolute"}}
             (insight-panel "" "")]
 

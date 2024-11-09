@@ -181,6 +181,7 @@ function center(nodeId) {
     const position = node.renderedPosition();
     const canvasRect = canvas.getBoundingClientRect();
     var div = document.getElementById("silo-detail-floating-window");
+    div.classList.remove("hidden");
     div.style.top = canvasRect.top + position.y - 200 + "px";
     div.style.left = canvasRect.left + position.x + "px";
   }
@@ -190,6 +191,23 @@ function center(nodeId) {
   });
 
 }
+
+
+function clearFocus() {
+  cy.off('render');
+}
+
+document.getElementById("silo-detail-floating-window-close").addEventListener('click', () => {
+  clearFocus();
+});
+
+const nonScrollableDiv = document.getElementById('silo-detail-floating-window');
+
+// Prevent scrolling entirely when hovering over the div
+nonScrollableDiv.addEventListener('wheel', (event) => {
+  event.preventDefault();
+  cy.container().dispatchEvent(new WheelEvent('wheel', event));
+}, { passive: false });
 
 function highlightElements(nodeIds, edgeIds) {
   // Remove previous highlights if needed
@@ -239,8 +257,8 @@ listElements.forEach((element) => {
   window.addEventListener('resize', resizeCanvas, false);
 
   function resizeCanvas() {
-    canvas.width = window.innerWidth * pixelRatio;
-    canvas.height = window.innerHeight * pixelRatio;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
   }
 
   resizeCanvas();
