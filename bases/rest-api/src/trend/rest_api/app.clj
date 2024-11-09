@@ -17,7 +17,7 @@
 
 (defn- insight-panel [silo silo-id->actor-name]
   (let [actors (get silo-id->actor-name (util/id silo))]
-    [:div {:class "z-10 mx-auto max-w-3xl transform divide-y divide-gray-100 overflow-hidden rounded-xl opacity-90 bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all"}
+    [:div {:class "z-10 mx-auto max-w-3xl transform overflow-hidden rounded-xl opacity-90 bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all"}
      [:div {:class "relative p-5 flex"}
       [:h1 {:class "text-xl font-semibold leading-6 text-gray-900"} "Meeting Title"]
       [:div {:class "ml-auto"}
@@ -29,7 +29,7 @@
          [:span {:class "sr-only"} "Dismiss"]
          [:svg {:class "h-5 w-5", :viewbox "0 0 20 20", :fill "currentColor", :aria-hidden "true", :data-slot "icon"}
           [:path {:d "M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"}]]]]]]
-     [:div {:class "slide-it" :id "swap-me"}
+     [:div {:class "slide-it divide-y divide-gray-100" :id "swap-me"}
       [:div {:class "px-6 py-14 text-center text-sm sm:px-14"}
        [:svg {:class "mx-auto h-6 w-6 text-gray-400", :fill "none", :viewbox "0 0 24 24", :stroke-width "1.5", :stroke "currentColor", :aria-hidden "true", :data-slot "icon"}
         [:path {:stroke-linecap "round", :stroke-linejoin "round", :d "M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"}]]
