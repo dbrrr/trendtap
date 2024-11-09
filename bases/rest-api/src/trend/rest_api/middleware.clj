@@ -6,7 +6,7 @@
    [reitit.ring.coercion :as rrc]
    [reitit.ring.middleware.parameters :as parameters]
    [trend.rest-api.system :as system]
-   [ring.middleware.cookies :as cooks]))
+   [trend.account.interface :as account]))
 
 (def m
   (muun/create
@@ -21,8 +21,13 @@
 
 (defn wrap-session [handler]
   (fn [req]
-    (let [valid-session? (-> req :cookies :session)]
-      (println valid-session?))))
+    (let [session-cookie (-> req :cookies :session)
+          account (account/by-email! (:ctx req) session-cookie)
+          new-ctx (if account
+                    (assoc (:ctx req) :user account)
+                    (:ctx req))]
+
+      (handler (assoc req :ctx new-ctx)))))
 
 (defn wrap-system [handler]
   (fn [req]
@@ -30,4 +35,5 @@
 
 (def stack [parameters/parameters-middleware
             rrc/coerce-request-middleware
-            wrap-system])
+            wrap-system
+            wrap-session])

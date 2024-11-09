@@ -31,3 +31,13 @@
     (-> (mr/request (keyword (str/lower-case form-method)) form-action)
         (mr/body form-params)
         (core/handler))))
+
+(defn secured-handler [user-email]
+  (let [session-cookie (:session (:cookies (login user-email)))]
+    (fn [req]
+      (-> req
+          (assoc :cookies {:session session-cookie})
+          (core/handler)))))
+
+(defn homepage []
+  (mr/request :get (:path (r/match-by-name core/route-tree :link/home))))

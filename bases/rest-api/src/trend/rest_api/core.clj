@@ -11,7 +11,8 @@
    [trend.silo.interface :as silo]
    [trend.actor.interface :as actor]
    [clojure.data.json :as json]
-   [trend.util.interface :as util]))
+   [trend.util.interface :as util]
+   [trend.account.interface :as account]))
 
 (defn hyperscript [_req]
   {:status 200
@@ -65,7 +66,13 @@
 ;; NOTE don't change this name, or link/to will break
 (link/routes route-tree
   (ring/router
-   [["/" {:get {:handler (fn [req] req)}}]
+   [["/" {:name :link/home
+          :get {:handler (fn [{:keys [ctx] :as req}]
+                           (if (:user ctx)
+                             {:status 301
+                              :headers {"Location" "/app"}}
+                             {:status 301
+                              :headers {"Location" "/login"}}))}}]
     ["/app" {:name :link/app
              :get  {:handler (fn [req]
                                (app/load-it req))}}]
@@ -73,11 +80,14 @@
                :get  {:handler (fn [req]
                                  (login/login-page (link/to :link/login
                                                             :link/signup)))}
-               :post {:handler (fn [req]
-                                 (println (-> req :parameters :form))
-                                 {:status  301
-                                  :cookies {:session "Foobar"}
-                                  :headers {"Location" "/signup"}})
+               :post {:handler (fn [{:keys [ctx parameters] :as req}]
+                                 (let [user-email (-> parameters :form :email)]
+                                   (if-let [account (account/by-email! ctx user-email)]
+                                     {:status  301
+                                      :cookies {:session (:email account)}
+                                      :headers {"Location" "/signup"}}
+                                     {:status  200
+                                      :body "Fixme"})))
                       :parameters {:form any?}}}]
     ["/signup" {:name :link/signup
                 :get  {:handler (fn [req] (signup/signup-form (link/to :link/signup)))}
