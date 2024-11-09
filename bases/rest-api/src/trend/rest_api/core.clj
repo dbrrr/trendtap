@@ -55,8 +55,7 @@
         silos-used-by-actors (set (map :silo-id actors))
         ;; TODO update these to uses classes instead of custom attributes
         silo-nodes (map #(hash-map :data {:id %
-                                          :nodeType "silo"
-                                          :label "Meeting"}) silos-used-by-actors)
+                                          :nodeType "silo"}) silos-used-by-actors)
         actor-nodes (map #(hash-map :data {:id (util/id %)
                                            :nodeType "actor"
                                            :label (-> % :details :description)}) actors)

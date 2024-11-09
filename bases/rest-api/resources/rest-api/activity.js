@@ -11,7 +11,7 @@ function renderSilo(ele) {
   const height = size;
   const scale = (size - iconResize) / size;
   const iconTranslate = iconResize / 2 / scale;
-  const backgroundColor = `#c14732`;
+  const backgroundColor = `#CB6040`;
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
       <path d="M290.135,268.067v201.267c0,4.71,3.823,8.533,8.533,8.533s8.533-3.823,8.533-8.533V285.134l2.5,2.5 c1.664,1.664,3.849,2.5,6.033,2.5s4.369-0.836,6.033-2.5c3.337-3.337,3.337-8.73,0-12.066l-17.058-17.067h-0.009l-48.7-48.7 v-30.601c0-4.71-3.823-8.533-8.533-8.533s-8.533,3.823-8.533,8.533v25.6H76.802c-2.261,0-4.437,0.896-6.033,2.5l-51.2,51.191 c0,0.008,0,0.008-0.009,0.008L2.502,275.568c-3.336,3.336-3.336,8.73,0,12.066c3.337,3.336,8.73,3.336,12.066,0l2.5-2.5v184.201 c0,4.71,3.823,8.533,8.533,8.533c4.71,0,8.533-3.823,8.533-8.533V268.067l46.2-46.199h163.601L290.135,268.067z"
@@ -39,10 +39,10 @@ function renderSilo(ele) {
     </svg>`;
 
   return {
-    svg: 'data:image/svg+xml;base64,' + btoa(svg),
+    //svg: 'data:image/svg+xml;base64,' + btoa(svg),
     background: backgroundColor,
-    width: 32,
-    height: 32,
+    width: 16,
+    height: 16,
   };
 }
 
@@ -50,23 +50,21 @@ function renderSilo(ele) {
 function renderActor(ele) {
   // Icon path is assumed to be of 32x32 in this example. You may auto calculate this if you wish.
   const iconPath = "M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z";
-  const iconColor = '#ffffff';
-  const size = 24; // may need to calculate this yourself
+  const iconColor = `#F2E5BF`;
+  const size = 32; // may need to calculate this yourself
   const iconResize = 0; // adjust this for more "padding" (bigger number = more smaller icon)
   const width = size;
   const height = size;
-  const scale = (size - iconResize) / size;
-  const iconTranslate = iconResize / 2 / scale;
-  const backgroundColor = `#3265c3`;
+  const scale = (size / 24);
+  const backgroundColor = `#257180`;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
-      <rect x="0" y="0" width="${width}" height="${height}" fill="${backgroundColor}"></rect>
-      <path d="${iconPath}" fill="${iconColor}" transform="scale(${scale}) translate(${iconTranslate}, ${iconTranslate}) "></path>
+      <path d="${iconPath}" fill="${iconColor}" transform="scale(${scale})"></path>
     </svg>`;
   return {
     svg: 'data:image/svg+xml;base64,' + btoa(svg),
     background: backgroundColor,
-    width: 24,
-    height: 24,
+    width: 32,
+    height: 32,
   };
 }
 
@@ -88,33 +86,24 @@ cy = cytoscape({
   elements: data,
 
   style: [
-    {
-      selector: 'node.highlighted',
-      style: {
-        'background-color': "blue"
-      }
-    },
 
     // the stylesheet for the graph
     {
-
-
       selector: 'node',
       style: {
-        //'background-color': (ele) => renderNode(ele).background,
+        'background-color': (ele) => renderNode(ele).background,
         'background-image': (ele) => renderNode(ele).svg,
-        'border': '1px solid black',
         width: (ele) => renderNode(ele).width,
         height: (ele) => renderNode(ele).height,
         'label': 'data(label)',
-        'font-size': '5px',
-        'font-weight': '900',
+        'font-size': '8px',
+        'font-weight': '800',
         "color": "rgb(67,56,202)",
         "text-background-color": "rgb(238,242,255)",
         "text-background-opacity": "1",
         "text-background-shape": "roundrectangle",
         "text-border-color": "rgb(59,130,246,0.5)",
-        'text-background-padding': '1.5px',
+        'text-background-padding': '3px',
         "text-border-width": 0.4,
         "text-border-opacity": 0.5,
       }
@@ -123,13 +112,21 @@ cy = cytoscape({
     {
       selector: 'edge',
       style: {
-        'width': 1,
-        'line-color': '#ccc',
+        'width': 2,
+        'line-color': `#F2E5BF`,
         'target-arrow-color': '#ccc',
-        'target-arrow-shape': 'triangle',
-        'curve-style': 'bezier'
+        'target-arrow-shape': 'none',
+        'curve-style': 'straight-triangle'
+      }
+    },
+
+    {
+      selector: 'node.highlighted',
+      style: {
+        'background-color': "#FD8B51"
       }
     }
+
   ],
 
   layout: {
@@ -146,15 +143,55 @@ function clearHighlightedElements() {
   cy.elements('.highlighted').removeClass('highlighted');
 }
 
+function center(nodeId) {
+  const elements = cy.getElementById(nodeId).incomers();
+
+  cy.center(elements);
+
+  // Get the current pan position
+  const pan = cy.pan();
+  const zoom = cy.zoom();
+  const boundingBox = elements.boundingBox();
+
+  // Calculate the offset position
+  const newPan = {
+    x: pan.x - (boundingBox.x1 * zoom) - 100,
+    y: pan.y - (boundingBox.y1 * zoom) - 100,
+  };
+
+  cy.animate({
+    pan: newPan
+  }, {
+      duration: 250
+    });
+
+  const canvas = document.getElementById('graphCanvas');
+
+  // Function to draw a text box at a Cytoscape node position
+  function drawTextBoxAtNode(nodeId, text) {
+    // Get the position of the node
+    const node = cy.getElementById(nodeId);
+    const position = node.renderedPosition();
+    const canvasRect = canvas.getBoundingClientRect();
+    var div = document.getElementById("silo-detail-floating-window");
+    div.style.top = canvasRect.top + position.y + "px";
+    div.style.left = canvasRect.left + position.x + "px";
+  }
+
+  cy.on('render', () => {
+    drawTextBoxAtNode(nodeId, 'Hello Node A');
+  });
+
+}
+
 function highlightElements(nodeIds, edgeIds) {
   // Remove previous highlights if needed
-  cy.elements('.highlighted').removeClass('highlighted');
+  clearHighlightedElements();
 
   console.log(nodeIds);
   // Highlight nodes
   nodeIds.forEach(id => {
-    console.log(cy.getElementById(id));
-    cy.getElementById(id).addClass('highlighted');
+    cy.getElementById(id).addClass('highlighted').incomers().addClass('highlighted');
   });
 
   // Highlight edges
@@ -178,11 +215,32 @@ listElements.forEach((element) => {
   element.addEventListener('mouseenter', () => {
     console.log(element.id);
     highlightElements([element.id], [])
-    console.log('Mouse entered an element');
   });
 
   element.addEventListener('mouseleave', () => {
     clearHighlightedElements();
-    console.log('Mouse left an element');
+  });
+
+  element.addEventListener('click', () => {
+    console.log("clicked!");
+    center(element.id);
   });
 });
+
+(function() {
+  const canvas = document.getElementById('graphCanvas');
+  const context = canvas.getContext('2d');
+
+  // resize the canvas to fill browser window dynamically
+  window.addEventListener('resize', resizeCanvas, false);
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth * pixelRatio;
+    canvas.height = window.innerHeight * pixelRatio;
+    //canvas.width = window.innerWidth;
+    //canvas.height = window.innerHeight;
+  }
+
+  resizeCanvas();
+
+})();
