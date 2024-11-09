@@ -27,4 +27,5 @@
    [:script {:src "/htmx-ws"}]
    [:script {:src "/hyperscript"}]
    [:script {:src "/htmx-sse"}]
-   [:script {:src "/tailwind"}]])
+   [:script {:src "/tailwind"}]
+   [:link {:rel "stylesheet" :href "/common.css"}]])

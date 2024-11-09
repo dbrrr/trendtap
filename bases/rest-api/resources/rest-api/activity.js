@@ -87,11 +87,21 @@ cy = cytoscape({
 
   elements: data,
 
-  style: [ // the stylesheet for the graph
+  style: [
     {
+      selector: 'node.highlighted',
+      style: {
+        'background-color': "blue"
+      }
+    },
+
+    // the stylesheet for the graph
+    {
+
+
       selector: 'node',
       style: {
-        'background-color': (ele) => renderNode(ele).background,
+        //'background-color': (ele) => renderNode(ele).background,
         'background-image': (ele) => renderNode(ele).svg,
         'border': '1px solid black',
         width: (ele) => renderNode(ele).width,
@@ -131,12 +141,19 @@ cy = cytoscape({
 
 }
 
+function clearHighlightedElements() {
+  // Remove previous highlights if needed
+  cy.elements('.highlighted').removeClass('highlighted');
+}
+
 function highlightElements(nodeIds, edgeIds) {
   // Remove previous highlights if needed
   cy.elements('.highlighted').removeClass('highlighted');
 
+  console.log(nodeIds);
   // Highlight nodes
   nodeIds.forEach(id => {
+    console.log(cy.getElementById(id));
     cy.getElementById(id).addClass('highlighted');
   });
 
@@ -159,10 +176,13 @@ const listElements = document.querySelectorAll('.siloItem');
 // Loop through each element and add event listeners
 listElements.forEach((element) => {
   element.addEventListener('mouseenter', () => {
+    console.log(element.id);
+    highlightElements([element.id], [])
     console.log('Mouse entered an element');
   });
 
   element.addEventListener('mouseleave', () => {
+    clearHighlightedElements();
     console.log('Mouse left an element');
   });
 });

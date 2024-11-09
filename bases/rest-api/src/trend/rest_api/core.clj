@@ -14,6 +14,11 @@
    [trend.util.interface :as util]
    [trend.account.interface :as account]))
 
+(defn css [_req]
+  {:status 200
+   :headers {"Content-type" "text/css"}
+   :body (slurp "bases/rest-api/resources/rest-api/common.css")})
+
 (defn hyperscript [_req]
   {:status 200
    :headers {"Content-type" "application/javascript"}
@@ -84,6 +89,7 @@
      ["/htmx-library" {:get {:handler (fn [req] (htmx-library req))}}]
      ["/activity" {:get {:handler (fn [req] (activity req))}}]
      ["/htmx-ws" {:get {:handler (fn [req] (htmx-ws req))}}]
+     ["/common.css" {:get {:handler (fn [req] (css req))}}]
      ["/hyperscript" {:get {:handler (fn [req] (hyperscript req))}}]
      ["/htmx-sse" {:get {:handler (fn [req] (htmx-sse req))}}]
      ["/tailwind" {:get {:handler (fn [req] (tailwind req))}}]
