@@ -94,7 +94,7 @@ var cy = cytoscape({
         width: (ele) => renderNode(ele).width,
         height: (ele) => renderNode(ele).height,
         'label': 'data(label)',
-        'font-size': '3px',
+        'font-size': '5px',
         'font-weight': '900',
         "color": "rgb(67,56,202)",
         "text-background-color": "rgb(238,242,255)",
