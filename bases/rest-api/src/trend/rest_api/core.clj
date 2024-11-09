@@ -74,9 +74,11 @@
                                  (login/login-page (link/to :link/login
                                                             :link/signup)))}
                :post {:handler (fn [req]
-                                 ;; TODO login doesn't actually do anything currently
+                                 (println (-> req :parameters :form))
                                  {:status  301
-                                  :headers {"Location" "/signup"}})}}]
+                                  :cookies {:session "Foobar"}
+                                  :headers {"Location" "/signup"}})
+                      :parameters {:form any?}}}]
     ["/signup" {:name :link/signup
                 :get  {:handler (fn [req] (signup/signup-form (link/to :link/signup)))}
                 :post {:handler (fn [req]

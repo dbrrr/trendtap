@@ -5,7 +5,8 @@
    [muuntaja.format.form :as muun-form]
    [reitit.ring.coercion :as rrc]
    [reitit.ring.middleware.parameters :as parameters]
-   [trend.rest-api.system :as system]))
+   [trend.rest-api.system :as system]
+   [ring.middleware.cookies :as cooks]))
 
 (def m
   (muun/create
@@ -17,6 +18,11 @@
        (assoc-in
         [:formats "application/json" :encoder-opts]
         {:encode-key-fn csk/->snake_case}))))
+
+(defn wrap-session [handler]
+  (fn [req]
+    (let [valid-session? (-> req :cookies :session)]
+      (println valid-session?))))
 
 (defn wrap-system [handler]
   (fn [req]
