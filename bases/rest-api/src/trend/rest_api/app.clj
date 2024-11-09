@@ -8,13 +8,16 @@
 
 (defn- insight-panel [silo silo-id->actor-name]
   [:div {:class "z-10 mx-auto max-w-3xl transform divide-y divide-gray-100 overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all"}
-   [:div {:class "relative"}
-    [:svg {:class "pointer-events-none absolute left-4 top-3.5 h-5 w-5 text-gray-400", :viewbox "0 0 20 20", :fill "currentColor", :aria-hidden "true", :data-slot "icon"}
-     [:path {:fill-rule "evenodd", :d "M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z", :clip-rule "evenodd"}]]
-    [:input {:type "text", :class "h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-800 placeholder:text-gray-400 focus:ring-0 sm:text-sm", :placeholder "Search...", :role "combobox", :aria-expanded "false", :aria-controls "options"}]]
+   [:div {:class "relative p-5"}
+    [:h1 {:class "text-xl font-semibold leading-6 text-gray-900"} "Meeting Title"]]
+   [:div {:class "px-6 py-14 text-center text-sm sm:px-14"}
+    [:svg {:class "mx-auto h-6 w-6 text-gray-400", :fill "none", :viewbox "0 0 24 24", :stroke-width "1.5", :stroke "currentColor", :aria-hidden "true", :data-slot "icon"}
+     [:path {:stroke-linecap "round", :stroke-linejoin "round", :d "M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"}]]
+    [:p {:class "mt-4 font-semibold text-gray-900"} "No people found"]
+    [:p {:class "mt-2 text-gray-500"} "We couldn’t find anything with that term. Please try again."]]
    [:div {:class "flex transform-gpu divide-x divide-gray-100"}
     [:div {:class "max-h-96 min-w-0 flex-auto scroll-py-4 overflow-y-auto px-6 py-4 sm:h-96"}
-     [:h2 {:class "mb-4 mt-2 text-xs font-semibold text-gray-500"} "Recent searches"]
+     [:h2 {:class "mb-4 mt-2 text-xs font-semibold text-gray-500"} "Participants"]
      [:ul {:class "-mx-2 text-sm text-gray-700", :id "recent", :role "listbox"}
       [:li {:class "group flex cursor-default select-none items-center rounded-md p-2", :id "recent-1", :role "option", :tabindex "-1"}
        [:img {:src "https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", :class "h-6 w-6 flex-none rounded-full"}]
@@ -53,21 +56,7 @@
       [:h2 {:class "mt-3 font-semibold text-gray-900"} "Tom Cook"]
       [:p {:class "text-sm/6 text-gray-500"} "Director, Product Development"]]
      [:div {:class "flex flex-auto flex-col justify-between p-6"}
-      [:dl {:class "grid grid-cols-1 gap-x-6 gap-y-3 text-sm text-gray-700"}
-       [:dt {:class "col-end-1 font-semibold text-gray-900"} "Phone"]
-       [:dd "881-460-8515"]
-       [:dt {:class "col-end-1 font-semibold text-gray-900"} "URL"]
-       [:dd {:class "truncate"}
-        [:a {:href "https://example.com", :class "text-indigo-600 underline"} "https://example.com"]]
-       [:dt {:class "col-end-1 font-semibold text-gray-900"} "Email"]
-       [:dd {:class "truncate"}
-        [:a {:href "#", :class "text-indigo-600 underline"} "tomcook@example.com"]]]
-      [:button {:type "button", :class "mt-6 w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"} "Send message"]]]]
-   [:div {:class "px-6 py-14 text-center text-sm sm:px-14"}
-    [:svg {:class "mx-auto h-6 w-6 text-gray-400", :fill "none", :viewbox "0 0 24 24", :stroke-width "1.5", :stroke "currentColor", :aria-hidden "true", :data-slot "icon"}
-     [:path {:stroke-linecap "round", :stroke-linejoin "round", :d "M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"}]]
-    [:p {:class "mt-4 font-semibold text-gray-900"} "No people found"]
-    [:p {:class "mt-2 text-gray-500"} "We couldn’t find anything with that term. Please try again."]]])
+      [:button {:type "button", :class "mt-6 w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"} "Send message"]]]]])
 
 (defn- silo-item [silo silo-id->actor-name]
   [:li {:class "overflow-hidden rounded-xl border border-gray-200 bg-white siloItem"
@@ -159,7 +148,7 @@
          [:div {:class "mx-auto"}
           [:div {:class "mx-auto grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-2"}
            [:div {:id "silo-detail-floating-window"
-                  :class "bg-white px-4 py-5 sm:px-6"
+                  :class "z-10"
                   :style {"position" "absolute"}}
             (insight-panel "" "")]
 

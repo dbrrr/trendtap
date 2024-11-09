@@ -40,6 +40,7 @@ function renderSilo(ele) {
 
   return {
     //svg: 'data:image/svg+xml;base64,' + btoa(svg),
+    svg: "none",
     background: backgroundColor,
     width: 16,
     height: 16,
@@ -130,8 +131,13 @@ cy = cytoscape({
   ],
 
   layout: {
-    name: 'cose'
-  }
+    name: 'cose',
+    animate: false,
+    fit: true
+  },
+
+  maxZoom: 1.8,
+  minZoom: 0.45,
 
 });
 
@@ -148,38 +154,50 @@ function center(nodeId) {
 
   cy.center(elements);
 
+  const targetX = 400;
+  const targetY = 427;
+
   // Get the current pan position
   const pan = cy.pan();
   const zoom = cy.zoom();
   const boundingBox = elements.boundingBox();
 
+  console.log("Current ");
+  console.log(pan);
+  console.log(zoom);
+  console.log("Bounding box");
+  console.log(boundingBox);
+
   // Calculate the offset position
   const newPan = {
-    x: pan.x - (boundingBox.x1 * zoom) - 100,
-    y: pan.y - (boundingBox.y1 * zoom) - 100,
+    x: pan.x - (boundingBox.x1 * zoom),
+    y: pan.y - (boundingBox.y1 * zoom),
   };
+
+  console.log("New Pan")
+  console.log(newPan);
 
   cy.animate({
     pan: newPan
   }, {
-      duration: 250
-    });
+    duration: 250
+  });
 
   const canvas = document.getElementById('graphCanvas');
 
   // Function to draw a text box at a Cytoscape node position
-  function drawTextBoxAtNode(nodeId, text) {
+  function drawTextBoxAtNode(nodeId) {
     // Get the position of the node
     const node = cy.getElementById(nodeId);
     const position = node.renderedPosition();
     const canvasRect = canvas.getBoundingClientRect();
     var div = document.getElementById("silo-detail-floating-window");
-    div.style.top = canvasRect.top + position.y + "px";
+    div.style.top = canvasRect.top + position.y - 200 + "px";
     div.style.left = canvasRect.left + position.x + "px";
   }
 
   cy.on('render', () => {
-    drawTextBoxAtNode(nodeId, 'Hello Node A');
+    drawTextBoxAtNode(nodeId);
   });
 
 }
@@ -188,7 +206,6 @@ function highlightElements(nodeIds, edgeIds) {
   // Remove previous highlights if needed
   clearHighlightedElements();
 
-  console.log(nodeIds);
   // Highlight nodes
   nodeIds.forEach(id => {
     cy.getElementById(id).addClass('highlighted').incomers().addClass('highlighted');
@@ -213,7 +230,6 @@ const listElements = document.querySelectorAll('.siloItem');
 // Loop through each element and add event listeners
 listElements.forEach((element) => {
   element.addEventListener('mouseenter', () => {
-    console.log(element.id);
     highlightElements([element.id], [])
   });
 
@@ -222,7 +238,6 @@ listElements.forEach((element) => {
   });
 
   element.addEventListener('click', () => {
-    console.log("clicked!");
     center(element.id);
   });
 });
@@ -237,8 +252,6 @@ listElements.forEach((element) => {
   function resizeCanvas() {
     canvas.width = window.innerWidth * pixelRatio;
     canvas.height = window.innerHeight * pixelRatio;
-    //canvas.width = window.innerWidth;
-    //canvas.height = window.innerHeight;
   }
 
   resizeCanvas();
