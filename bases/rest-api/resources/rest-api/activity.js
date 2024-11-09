@@ -46,6 +46,7 @@ function renderSilo(ele) {
   };
 }
 
+
 function renderActor(ele) {
   // Icon path is assumed to be of 32x32 in this example. You may auto calculate this if you wish.
   const iconPath = "M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z";
@@ -76,9 +77,11 @@ function renderNode(ele) {
   return renderActor(ele);
 }
 
+let cy = null;
+
 function initCytoscape(data)
 {
-var cy = cytoscape({
+cy = cytoscape({
 
   container: document.getElementById('activity-container'), // container to render in
 
@@ -128,6 +131,21 @@ var cy = cytoscape({
 
 }
 
+function highlightElements(nodeIds, edgeIds) {
+  // Remove previous highlights if needed
+  cy.elements('.highlighted').removeClass('highlighted');
+
+  // Highlight nodes
+  nodeIds.forEach(id => {
+    cy.getElementById(id).addClass('highlighted');
+  });
+
+  // Highlight edges
+  edgeIds.forEach(id => {
+    cy.getElementById(id).addClass('highlighted');
+  });
+}
+
 var xmlHttp = new XMLHttpRequest();
 xmlHttp.onreadystatechange = function() {
   if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
@@ -135,3 +153,16 @@ xmlHttp.onreadystatechange = function() {
 }
 xmlHttp.open("GET", "/silo/activity/", true); // true for asynchronous
 xmlHttp.send(null);
+
+const listElements = document.querySelectorAll('.siloItem');
+
+// Loop through each element and add event listeners
+listElements.forEach((element) => {
+  element.addEventListener('mouseenter', () => {
+    console.log('Mouse entered an element');
+  });
+
+  element.addEventListener('mouseleave', () => {
+    console.log('Mouse left an element');
+  });
+});

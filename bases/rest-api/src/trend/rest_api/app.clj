@@ -7,7 +7,8 @@
    [trend.util.interface :as util]))
 
 (defn- silo-item [silo silo-id->actor-name]
-  [:li {:class "overflow-hidden rounded-xl border border-gray-200 bg-white"}
+  [:li {:class "overflow-hidden rounded-xl border border-gray-200 bg-white siloItem"
+        :style {"z-index" 200}}
    [:div {:class "flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-2"}
     [:img {:src "https://tailwindui.com/plus/img/logos/48x48/tuple.svg",
            :alt "Tuple",
