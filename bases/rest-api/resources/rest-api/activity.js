@@ -150,35 +150,24 @@ function clearHighlightedElements() {
 }
 
 function center(nodeId) {
-  const elements = cy.getElementById(nodeId).incomers();
+  const position = cy.getElementById(nodeId).position();
 
-  cy.center(elements);
-
-  const targetX = 400;
-  const targetY = 427;
-
-  // Get the current pan position
-  const pan = cy.pan();
   const zoom = cy.zoom();
-  const boundingBox = elements.boundingBox();
+  const pan = cy.pan();
 
-  console.log("Current ");
-  console.log(pan);
-  console.log(zoom);
-  console.log("Bounding box");
-  console.log(boundingBox);
-
-  // Calculate the offset position
-  const newPan = {
-    x: pan.x - (boundingBox.x1 * zoom),
-    y: pan.y - (boundingBox.y1 * zoom),
+  const renderedNodePosition = {
+    x: position.x * zoom + pan.x,
+    y: position.y * zoom + pan.y
   };
 
-  console.log("New Pan")
-  console.log(newPan);
+  const panOffset = {
+    x: 300 - renderedNodePosition.x,
+    y: 280 - renderedNodePosition.y
+  };
 
   cy.animate({
-    pan: newPan
+    pan: {x: pan.x + panOffset.x,
+          y: pan.y + panOffset.y}
   }, {
     duration: 250
   });
