@@ -66,58 +66,61 @@
 ;; NOTE don't change this name, or link/to will break
 (link/routes route-tree
   (ring/router
-   [["/" {:name :link/home
-          :get {:handler (fn [{:keys [ctx] :as req}]
-                           (if (:user ctx)
-                             {:status 301
-                              :headers {"Location" "/app"}}
-                             {:status 301
-                              :headers {"Location" "/login"}}))}}]
-    ["/app" {:name :link/app
-             :get  {:handler (fn [req]
-                               (app/load-it req))}}]
-    ["/login" {:name :link/login
-               :get  {:handler (fn [req]
-                                 (login/login-page (link/to :link/login
-                                                            :link/signup)))}
-               :post {:handler (fn [{:keys [ctx parameters] :as req}]
-                                 (let [user-email (-> parameters :form :email)]
-                                   (if-let [account (account/by-email! ctx user-email)]
-                                     {:status  301
-                                      :cookies {:session (:email account)}
-                                      :headers {"Location" "/signup"}}
-                                     {:status  200
-                                      :body "Fixme"})))
-                      :parameters {:form any?}}}]
-    ["/signup" {:name :link/signup
-                :get  {:handler (fn [req] (signup/signup-form (link/to :link/signup)))}
-                :post {:handler (fn [req]
-                                  (signup/new-user req)
-                                  {:status 301
-                                   :headers {"Location" "/"}})
+   [;; Unsecured routes
+    [["/login" {:name :link/login
+                :get  {:handler (fn [req]
+                                  (login/login-page (link/to :link/login
+                                                             :link/signup)))}
+                :post {:handler (fn [{:keys [ctx parameters] :as req}]
+                                  (let [user-email (-> parameters :form :email)]
+                                    (if-let [account (account/by-email! ctx user-email)]
+                                      {:status  302
+                                       :cookies {:session (:email account)}
+                                       :headers {"Location" "/app"}}
+                                      {:status  200
+                                       :body "Fixme"})))
                        :parameters {:form any?}}}]
-    ["/silo/activity/" {:name    :link/silo-activity
-                        :handler (fn [req] (silos-as-graph req))}]
-    ["/silo/example"
-     ["" {:name :link/silo-example
-          :get  {:handler (fn [req] (demo/silo (link/to :link/get-actor-row
-                                                        :link/silo-example)))}
-          :post {:handler    (fn [{{form-params :form} :parameters :as req}]
-                            (demo/generate (:ctx req)
-                                           (link/to :link/app)
-                                           form-params))
-                 :parameters {:form any?}}}]
+     ;; Unnecessary stuff
+     ["/htmx-library" {:get {:handler (fn [req] (htmx-library req))}}]
+     ["/activity" {:get {:handler (fn [req] (activity req))}}]
+     ["/htmx-ws" {:get {:handler (fn [req] (htmx-ws req))}}]
+     ["/hyperscript" {:get {:handler (fn [req] (hyperscript req))}}]
+     ["/htmx-sse" {:get {:handler (fn [req] (htmx-sse req))}}]
+     ["/tailwind" {:get {:handler (fn [req] (tailwind req))}}]
+     ["/" {:name :link/home
+           :get {:handler (fn [{:keys [ctx] :as req}]
+                            (if (:user ctx)
+                              {:status 302
+                               :headers {"Location" "/app"}}
+                              {:status 302
+                               :headers {"Location" "/login"}}))}}]
+     ["/signup" {:name :link/signup
+                 :get  {:handler (fn [req] (signup/signup-form (link/to :link/signup)))}
+                 :post {:handler (fn [req]
+                                   (signup/new-user req)
+                                   {:status 302
+                                    :headers {"Location" "/"}})
+                        :parameters {:form any?}}}]]
 
-     ["/actor" {:name :link/get-actor-row
-                :get  {:handler (fn [req] (demo/add-actor (link/to :link/get-actor-row)))}}]]
+    ;; Secured routes
+    ["" {:middleware [middleware/wrap-auth]}
+     ["/app" {:name :link/app
+              :get  {:handler (fn [req]
+                                (app/load-it req))}}]
+     ["/silo/activity/" {:name    :link/silo-activity
+                         :handler (fn [req] (silos-as-graph req))}]
+     ["/silo/example"
+      ["" {:name :link/silo-example
+           :get  {:handler (fn [req] (demo/silo (link/to :link/get-actor-row
+                                                         :link/silo-example)))}
+           :post {:handler    (fn [{{form-params :form} :parameters :as req}]
+                                (demo/generate (:ctx req)
+                                               (link/to :link/app)
+                                               form-params))
+                  :parameters {:form any?}}}]
 
-    ;; Unnecessary stuff
-    ["/htmx-library" {:get {:handler (fn [req] (htmx-library req))}}]
-    ["/activity" {:get {:handler (fn [req] (activity req))}}]
-    ["/htmx-ws" {:get {:handler (fn [req] (htmx-ws req))}}]
-    ["/hyperscript" {:get {:handler (fn [req] (hyperscript req))}}]
-    ["/htmx-sse" {:get {:handler (fn [req] (htmx-sse req))}}]
-    ["/tailwind" {:get {:handler (fn [req] (tailwind req))}}]]
+      ["/actor" {:name :link/get-actor-row
+                 :get  {:handler (fn [req] (demo/add-actor (link/to :link/get-actor-row)))}}]]]]
    {:data {:coercion   malli-coercion/coercion
            :middleware middleware/stack}}))
 

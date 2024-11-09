@@ -6,6 +6,7 @@
    [reitit.ring.coercion :as rrc]
    [reitit.ring.middleware.parameters :as parameters]
    [trend.rest-api.system :as system]
+   [ring.middleware.cookies :as cook]
    [trend.account.interface :as account]))
 
 (def m
@@ -19,14 +20,25 @@
         [:formats "application/json" :encoder-opts]
         {:encode-key-fn csk/->snake_case}))))
 
+(defn wrap-auth [handler]
+  (fn [req]
+    (println "Authing")
+    (println (:ctx req))
+    (if (:user (:ctx req))
+      (handler req)
+      {:status 301
+       :headers {"Location" "/login"}})))
+
 (defn wrap-session [handler]
   (fn [req]
-    (let [session-cookie (-> req :cookies :session)
+    (let [session-cookie (get-in req [:cookies "session" :value])
+          _ (println (:cookies req))
+          _ (println session-cookie)
           account (account/by-email! (:ctx req) session-cookie)
+          _ (println account)
           new-ctx (if account
                     (assoc (:ctx req) :user account)
                     (:ctx req))]
-
       (handler (assoc req :ctx new-ctx)))))
 
 (defn wrap-system [handler]
@@ -36,4 +48,6 @@
 (def stack [parameters/parameters-middleware
             rrc/coerce-request-middleware
             wrap-system
-            wrap-session])
+            cook/wrap-cookies
+            wrap-session
+            ])

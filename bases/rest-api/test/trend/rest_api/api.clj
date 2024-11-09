@@ -2,8 +2,10 @@
   (:require  [clojure.test :refer :all]
              [trend.rest-api.core :as core]
              [reitit.core :as r]
+             [ring.util.codec :as ring-codec]
              [hickory.core :as h]
              [hickory.select :as hs]
+             [ring.middleware.cookies :as cook]
              [ring.mock.request :as mr]
              [clojure.string :as str]))
 
@@ -32,8 +34,23 @@
         (mr/body form-params)
         (core/handler))))
 
+(defn parse-set-cookie-header
+  [{:keys [headers] :as resp}]
+  (let [split-and-decode (fn [s]
+                           (let [[attribute value] (str/split s #"=")]
+                             [attribute (ring-codec/form-decode-str value)]))]
+    (reduce (fn [acc cookie-definition]
+              (let [[name+val & rest] (str/split cookie-definition #";")
+                    [name val] (split-and-decode name+val)]
+                (assoc acc name (into {:value (ring-codec/form-decode-str val)}
+                                      (map split-and-decode rest)))))
+            {} (get headers "Set-Cookie"))))
+
 (defn secured-handler [user-email]
-  (let [session-cookie (:session (:cookies (login user-email)))]
+  (let [session-cookie (-> (login user-email)
+                           (parse-set-cookie-header)
+                           (get "session")
+                           :value)]
     (fn [req]
       (-> req
           (assoc :cookies {:session session-cookie})
