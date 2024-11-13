@@ -192,14 +192,9 @@ function center(nodeId) {
 
 }
 
-
-function clearFocus() {
+window.clearCytoscapeFocus = function() {
   cy.off('render');
 }
-
-document.getElementById("silo-detail-floating-window-close").addEventListener('click', () => {
-  clearFocus();
-});
 
 const nonScrollableDiv = document.getElementById('silo-detail-floating-window');
 

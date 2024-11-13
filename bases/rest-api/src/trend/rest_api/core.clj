@@ -12,7 +12,8 @@
    [trend.actor.interface :as actor]
    [clojure.data.json :as json]
    [trend.util.interface :as util]
-   [trend.account.interface :as account]))
+   [trend.account.interface :as account]
+   [trend.rest-api.common :as common]))
 
 (defn css [_req]
   {:status 200
@@ -124,8 +125,9 @@
       ["/insights" {:name :link/silo-insight
                     :parameters {:path {:silo-id any?}}
                     :get {:handler (fn [{:keys [ctx] :as req}]
-                                     (app/silo-insights-panel ctx
-                                                              (-> req :parameters :path :silo-id)))}}]]
+                                     (common/render-and-respond
+                                      (app/silo-insights-panel ctx
+                                                               (-> req :parameters :path :silo-id))))}}]]
      ["/silo/example"
       ["" {:name :link/silo-example
            :get  {:handler (fn [req] (demo/silo (link/to :link/get-actor-row
