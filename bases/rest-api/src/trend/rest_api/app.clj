@@ -8,14 +8,15 @@
 
 (def silo-insight-panel "silo-detail-floating-window")
 
-(defn- insight-panel-actor [silo-id current-actor actor]
-  (let [active-classes " bg-gray-100 text-gray-900"
-        active? (= (util/id current-actor) (util/id actor))]
+(defn- insight-panel-actor [silo-id actor active?]
+  (let [active-classes "bg-gray-100"]
     [:li {:hx-trigger "mouseover"
-          :hx-target (format "#%s" silo-insight-panel)
-          :hx-get (format "/silo/%s/insights?actor-id=%s" silo-id (util/id actor))
-          :class (cond-> "group flex cursor-default select-none items-center rounded-md p-2"
-                   active? (str active-classes)), :id "option-1", :role "option", :tabindex "-1"}
+          :hx-target (format "#%s" "silo-detail-floating-window-actor-details")
+          :hx-swap "outerHTML"
+          :hx-get (format "/silo/%s/insights/actor/%s" silo-id (util/id actor))
+          :_ "on mouseenter remove .bg-gray-100 from .panel-actor then add .bg-gray-100 to me"
+          :class (cond-> "panel-actor group flex cursor-default select-none items-center rounded-md p-2"
+                   active? (str " " active-classes)), :id "option-1", :role "option", :tabindex "-1"}
      [:span {:class "inline-block h-6 w-6 overflow-hidden rounded-full bg-gray-100"}
       [:svg {:class "h-full w-full text-gray-300", :fill "currentColor", :viewbox "0 0 24 24"}
        [:path {:d "M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z"}]]]
@@ -24,8 +25,9 @@
                      true (str " hidden")), :viewbox "0 0 20 20", :fill "currentColor", :aria-hidden "true", :data-slot "icon"}
       [:path {:fill-rule "evenodd", :d "M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z", :clip-rule "evenodd"}]]]))
 
-(defn- insight-panel-actor-section [actor]
-  [:div {:class "hidden h-96 w-1/2 flex-none flex-col divide-y divide-gray-100 overflow-y-auto sm:flex"}
+(defn insight-panel-actor-section [actor]
+  [:div {:id "silo-detail-floating-window-actor-details"
+         :class "hidden h-96 w-1/2 flex-none flex-col divide-y divide-gray-100 overflow-y-auto sm:flex"}
    [:div {:class "flex-none p-6 text-center"}
     [:span {:class "inline-block h-14 w-14 overflow-hidden rounded-full bg-gray-100"}
      [:svg {:class "h-full w-full text-gray-300", :fill "currentColor", :viewbox "0 0 24 24"}
@@ -40,12 +42,8 @@
               :hx-target "#swap-me"}
      "Earn Points"]]])
 
-(defn silo-insights-panel [ctx actor-id silo-id]
+(defn silo-insights-panel [ctx silo-id]
   (let [silo (silo/by-id! ctx silo-id)
-        actors (actor/by-silo! ctx silo)
-        current-actor (or (and actor-id
-                               (medley/find-first (comp #{actor-id} :id) actors))
-                          (first actors))
         actors (actor/by-silo! ctx silo)]
     [:div {:class "z-10 mx-auto max-w-3xl transform overflow-hidden rounded-xl opacity-90 bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all"}
      [:div {:class "relative p-5 flex"}
@@ -70,10 +68,10 @@
        [:div {:class "max-h-96 min-w-0 flex-auto scroll-py-4 overflow-y-auto px-6 py-4 sm:h-96"}
         [:h2 {:class "mb-4 mt-2 text-xs font-semibold text-gray-500"} "Participants"]
         [:ul {:class "-mx-2 text-sm text-gray-700", :id "options", :role "listbox"}
-         (doall
-          (for [actor actors]
-            (insight-panel-actor silo-id current-actor actor)))]]
-       (insight-panel-actor-section current-actor)]]]))
+         (insight-panel-actor silo-id (first actors) :active)
+         (for [actor (rest actors)]
+           (insight-panel-actor silo-id actor false))]]
+       (insight-panel-actor-section (first actors))]]]))
 
 (defn moar [req]
   (common/render-and-respond
@@ -83,9 +81,9 @@
     [:p {:class "mt-4 font-semibold text-gray-900"} "No people found"]
     [:p {:class "mt-2 text-gray-500"} "We couldn’t find anything with that term. Please try again."]]))
 
-(defn- main-ticker-silo-item [silo silo-id->actor-name]
+(defn- main-ticker-silo-item [silo silo-id->actor]
   (let [silo-id (util/id silo)
-        silo-actors (get silo-id->actor-name (util/id silo))]
+        silo-actors (get silo-id->actor (util/id silo))]
     [:li {:class "flex items-center justify-between gap-x-6 py-5 siloItem"
           :id (util/id silo)
           :style {"z-index" 200}
@@ -107,10 +105,9 @@
 
 (defn load-it [{:keys [ctx] :as req}]
   (let [silos (silo/all! ctx)
-        silo-id->actor-name (some->> (seq silos)
-                                     (actor/by-silos! ctx)
-                                     (group-by (comp str :silo-id))
-                                     (medley/map-vals #(map (comp :description :details) %)))]
+        silo-id->actor (some->> (seq silos)
+                                (actor/by-silos! ctx)
+                                (group-by (comp str :silo-id)))]
     (common/render-and-respond
      [:html
       common/head
@@ -174,9 +171,7 @@
            [:div {:id silo-insight-panel
                   :class "z-10 hidden"
                   :style {"position" "absolute"}}
-            (silo-insights-panel ctx
-                                 (first (get silo-id->actor-name (util/id (first silos))))
-                                 (util/id (first silos)))]
+            (silo-insights-panel ctx (util/id (first silos)))]
 
            [:div {:id "activity-container"
                   :style {"width" "100%"
@@ -190,6 +185,6 @@
                   :class "divide-y divide-gray-100"}
              (doall
               (for [silo (reverse (sort-by :created silos))]
-                (main-ticker-silo-item silo silo-id->actor-name)))]]]]
+                (main-ticker-silo-item silo silo-id->actor)))]]]]
 
          #_[:div {:class "mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8"}]]]]])))

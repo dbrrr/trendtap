@@ -71,80 +71,81 @@
 
 ;; NOTE don't change this name, or link/to will break
 (link/routes route-tree
-  (ring/router
-   [;; Unsecured routes
-    [["/login" {:name :link/login
-                :get  {:handler (fn [req]
-                                  (login/login-page (link/to :link/login
-                                                             :link/signup)))}
-                :post {:handler (fn [{:keys [ctx parameters] :as req}]
-                                  (let [user-email (-> parameters :form :email)]
-                                    (if-let [account (account/by-email! ctx user-email)]
-                                      {:status  302
-                                       :cookies {:session (:email account)}
-                                       :headers {"Location" "/app"}}
-                                      {:status  200
-                                       :body "Fixme"})))
-                       :parameters {:form any?}}}]
+             (ring/router
+              [;; Unsecured routes
+               [["/login" {:name :link/login
+                           :get  {:handler (fn [req]
+                                             (login/login-page (link/to :link/login
+                                                                        :link/signup)))}
+                           :post {:handler (fn [{:keys [ctx parameters] :as req}]
+                                             (let [user-email (-> parameters :form :email)]
+                                               (if-let [account (account/by-email! ctx user-email)]
+                                                 {:status  302
+                                                  :cookies {:session (:email account)}
+                                                  :headers {"Location" "/app"}}
+                                                 {:status  200
+                                                  :body "Fixme"})))
+                                  :parameters {:form any?}}}]
      ;; Unnecessary stuff
-     ["/htmx-library" {:get {:handler (fn [req] (htmx-library req))}}]
-     ["/activity" {:get {:handler (fn [req] (activity req))}}]
-     ["/htmx-ws" {:get {:handler (fn [req] (htmx-ws req))}}]
-     ["/common.css" {:get {:handler (fn [req] (css req))}}]
-     ["/hyperscript" {:get {:handler (fn [req] (hyperscript req))}}]
-     ["/htmx-sse" {:get {:handler (fn [req] (htmx-sse req))}}]
-     ["/tailwind" {:get {:handler (fn [req] (tailwind req))}}]
-     ["/" {:name :link/home
-           :get {:handler (fn [{:keys [ctx] :as req}]
-                            (if (:user ctx)
-                              {:status 302
-                               :headers {"Location" "/app"}}
-                              {:status 302
-                               :headers {"Location" "/login"}}))}}]
-     ["/signup" {:name :link/signup
-                 :get  {:handler (fn [req] (signup/signup-form (link/to :link/signup)))}
-                 :post {:handler (fn [req]
-                                   (signup/new-user req)
-                                   {:status 302
-                                    :headers {"Location" "/"}})
-                        :parameters {:form any?}}}]]
+                ["/htmx-library" {:get {:handler (fn [req] (htmx-library req))}}]
+                ["/activity" {:get {:handler (fn [req] (activity req))}}]
+                ["/htmx-ws" {:get {:handler (fn [req] (htmx-ws req))}}]
+                ["/common.css" {:get {:handler (fn [req] (css req))}}]
+                ["/hyperscript" {:get {:handler (fn [req] (hyperscript req))}}]
+                ["/htmx-sse" {:get {:handler (fn [req] (htmx-sse req))}}]
+                ["/tailwind" {:get {:handler (fn [req] (tailwind req))}}]
+                ["/" {:name :link/home
+                      :get {:handler (fn [{:keys [ctx] :as req}]
+                                       (if (:user ctx)
+                                         {:status 302
+                                          :headers {"Location" "/app"}}
+                                         {:status 302
+                                          :headers {"Location" "/login"}}))}}]
+                ["/signup" {:name :link/signup
+                            :get  {:handler (fn [req] (signup/signup-form (link/to :link/signup)))}
+                            :post {:handler (fn [req]
+                                              (signup/new-user req)
+                                              {:status 302
+                                               :headers {"Location" "/"}})
+                                   :parameters {:form any?}}}]]
 
     ;; Secured routes
-    ["" {:middleware [middleware/wrap-auth]}
-     ["/app" {:name :link/app
-              :get  {:handler (fn [req]
-                                (app/load-it req))}}]
-     ["/new-content" {:get {:handler (fn [req]
-                                       (app/moar req)
+               ["" {:middleware [middleware/wrap-auth]}
+                ["/app" {:name :link/app
+                         :get  {:handler (fn [req]
+                                           (app/load-it req))}}]
+                ["/new-content" {:get {:handler (fn [req]
+                                                  (app/moar req))}}]
 
+                ["/silo/activity/" {:name    :link/silo-activity
+                                    :handler (fn [req] (silos-as-graph req))}]
+                ["/silo/:silo-id"
+                 ["/insights"
+                  ["" {:name :link/silo-insight
+                       :parameters {:path {:silo-id any?}}
+                       :get {:handler (fn [{:keys [ctx] :as req}]
+                                        (common/render-and-respond
+                                         (app/silo-insights-panel ctx (-> req :parameters :path :silo-id))))}}]
+                  ["/actor/:actor-id" {:name :link/silo-actor-insight
+                                       :parameters {:path {:silo-id any? :actor-id any?}}
+                                       :get {:handler (fn [{:keys [ctx] :as req}]
+                                                        (let [actor (actor/by-id! ctx (-> req :parameters :path :actor-id))]
+                                                          (common/render-and-respond
+                                                           (app/insight-panel-actor-section actor))))}}]]]
+                ["/silo/example"
+                 ["" {:name :link/silo-example
+                      :get  {:handler (fn [req] (demo/silo (link/to :link/get-actor-row
+                                                                    :link/silo-example)))}
+                      :post {:handler    (fn [{{form-params :form} :parameters :as req}]
+                                           (demo/generate (:ctx req)
+                                                          (link/to :link/app)
+                                                          form-params))
+                             :parameters {:form any?}}}]
 
-                                       )}}]
-     ["/silo/activity/" {:name    :link/silo-activity
-                         :handler (fn [req] (silos-as-graph req))}]
-     ["/silo/:silo-id"
-      ["/insights" {:name :link/silo-insight
-                    :parameters {:path {:silo-id any?}
-                                 :query any?}
-                    :get {:handler (fn [{:keys [ctx] :as req}]
-                                     (println (-> req :parameters))
-                                     (common/render-and-respond
-                                      (app/silo-insights-panel ctx
-                                                               (-> req :parameters :query :actor-id)
-                                                               (-> req :parameters :path :silo-id))))}}]]
-     ["/silo/example"
-      ["" {:name :link/silo-example
-           :get  {:handler (fn [req] (demo/silo (link/to :link/get-actor-row
-                                                         :link/silo-example)))}
-           :post {:handler    (fn [{{form-params :form} :parameters :as req}]
-                                (demo/generate (:ctx req)
-                                               (link/to :link/app)
-                                               form-params))
-                  :parameters {:form any?}}}]
-
-      ["/actor" {:name :link/get-actor-row
-                 :get  {:handler (fn [req] (demo/add-actor (link/to :link/get-actor-row)))}}]]]]
-   {:data {:coercion   malli-coercion/coercion
-           :middleware middleware/stack}}))
+                 ["/actor" {:name :link/get-actor-row
+                            :get  {:handler (fn [req] (demo/add-actor (link/to :link/get-actor-row)))}}]]]]
+              {:data {:coercion   malli-coercion/coercion
+                      :middleware middleware/stack}}))
 
 (defn default-404 [req]
   {:status 404
