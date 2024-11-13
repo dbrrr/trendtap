@@ -17,6 +17,13 @@
       (hh/from silo-table)
       (hh/where [:= :tenant-id (parse-uuid tenant-id)])))
 
+(defn by-id [{:keys [tenant-id] :as _ctx} silo-id]
+  (-> (hh/select :*)
+      (hh/from silo-table)
+      (hh/where [:and
+                 [:= :tenant-id (parse-uuid tenant-id)]
+                 [:= :id (parse-uuid silo-id)]])))
+
 (defn delete [{:keys [tenant-id] :as _ctx} silo]
   (-> (hh/delete-from silo-table)
       (hh/where [:and

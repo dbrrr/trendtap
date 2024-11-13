@@ -120,6 +120,12 @@
                                        )}}]
      ["/silo/activity/" {:name    :link/silo-activity
                          :handler (fn [req] (silos-as-graph req))}]
+     ["/silo/:silo-id"
+      ["/insights" {:name :link/silo-insight
+                    :parameters {:path {:silo-id any?}}
+                    :get {:handler (fn [{:keys [ctx] :as req}]
+                                     (app/silo-insights-panel ctx
+                                                              (-> req :parameters :path :silo-id)))}}]]
      ["/silo/example"
       ["" {:name :link/silo-example
            :get  {:handler (fn [req] (demo/silo (link/to :link/get-actor-row

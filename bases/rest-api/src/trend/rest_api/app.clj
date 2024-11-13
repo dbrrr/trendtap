@@ -6,6 +6,8 @@
    [medley.core :as medley]
    [trend.util.interface :as util]))
 
+(def silo-insight-panel "silo-detail-floating-window")
+
 (defn- insight-panel-actor [actor]
   [:li {:class "group flex cursor-default select-none items-center rounded-md p-2", :id "option-1", :role "option", :tabindex "-1"}
    [:span {:class "inline-block h-6 w-6 overflow-hidden rounded-full bg-gray-100"}
@@ -15,46 +17,48 @@
    [:svg {:class "ml-3 hidden h-5 w-5 flex-none text-gray-400", :viewbox "0 0 20 20", :fill "currentColor", :aria-hidden "true", :data-slot "icon"}
     [:path {:fill-rule "evenodd", :d "M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z", :clip-rule "evenodd"}]]])
 
-(defn- insight-panel [silo silo-id->actor-name]
-  (let [actors (get silo-id->actor-name (util/id silo))]
-    [:div {:class "z-10 mx-auto max-w-3xl transform overflow-hidden rounded-xl opacity-90 bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all"}
-     [:div {:class "relative p-5 flex"}
-      [:h1 {:class "text-xl font-semibold leading-6 text-gray-900"} "Meeting Title"]
-      [:div {:class "ml-auto"}
-       [:div {:class "-mx-1.5 -my-1.5"}
-        [:button {:type "button",
-                  :id "silo-detail-floating-window-close"
-                  :class "inline-flex rounded-md bg-gray-50 p-1.5 text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50"
-                  :_ "on click add .hidden to #silo-detail-floating-window"}
-         [:span {:class "sr-only"} "Dismiss"]
-         [:svg {:class "h-5 w-5", :viewbox "0 0 20 20", :fill "currentColor", :aria-hidden "true", :data-slot "icon"}
-          [:path {:d "M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"}]]]]]]
-     [:div {:class "slide-it divide-y divide-gray-100" :id "swap-me"}
-      [:div {:class "px-6 py-14 text-center text-sm sm:px-14"}
-       [:svg {:class "mx-auto h-6 w-6 text-gray-400", :fill "none", :viewbox "0 0 24 24", :stroke-width "1.5", :stroke "currentColor", :aria-hidden "true", :data-slot "icon"}
-        [:path {:stroke-linecap "round", :stroke-linejoin "round", :d "M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"}]]
-       [:p {:class "mt-4 font-semibold text-gray-900"} "No people found"]
-       [:p {:class "mt-2 text-gray-500"} "We couldn’t find anything with that term. Please try again."]]
-      [:div {:class "flex transform-gpu divide-x divide-gray-100"}
-       [:div {:class "max-h-96 min-w-0 flex-auto scroll-py-4 overflow-y-auto px-6 py-4 sm:h-96"}
-        [:h2 {:class "mb-4 mt-2 text-xs font-semibold text-gray-500"} "Participants"]
-        [:ul {:class "-mx-2 text-sm text-gray-700", :id "options", :role "listbox"}
-         (doall (for [actor actors]
-                  (insight-panel-actor actor)))]]
-       [:div {:class "hidden h-96 w-1/2 flex-none flex-col divide-y divide-gray-100 overflow-y-auto sm:flex"}
-        [:div {:class "flex-none p-6 text-center"}
-         [:span {:class "inline-block h-14 w-14 overflow-hidden rounded-full bg-gray-100"}
-          [:svg {:class "h-full w-full text-gray-300", :fill "currentColor", :viewbox "0 0 24 24"}
-           [:path {:d "M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z"}]]]
-         [:h2 {:class "mt-3 font-semibold text-gray-900"} "Tom Cook"]
-         [:p {:class "text-sm/6 text-gray-500"} "Director, Product Development"]]
-        [:div {:class "flex flex-auto flex-col justify-between p-6"}
+(defn silo-insights-panel [ctx silo-id]
+  (let [silo (silo/by-id! ctx silo-id)
+        actors (map (comp :description :details) (actor/by-silo! ctx silo))]
+    (common/render-and-respond
+     [:div {:class "z-10 mx-auto max-w-3xl transform overflow-hidden rounded-xl opacity-90 bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all"}
+      [:div {:class "relative p-5 flex"}
+       [:h1 {:class "text-xl font-semibold leading-6 text-gray-900"} "Meeting Title"]
+       [:div {:class "ml-auto"}
+        [:div {:class "-mx-1.5 -my-1.5"}
          [:button {:type "button",
-                   :class "mt-6 w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                   :hx-get "/new-content"
-                   :hx-swap "innerHTML transition:true"
-                   :hx-target "#swap-me"}
-          "Earn Points"]]]]]]))
+                   :id "silo-detail-floating-window-close"
+                   :class "inline-flex rounded-md bg-gray-50 p-1.5 text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50"
+                   :_ (format "on click add .hidden to #%s" silo-insight-panel)}
+          [:span {:class "sr-only"} "Dismiss"]
+          [:svg {:class "h-5 w-5", :viewbox "0 0 20 20", :fill "currentColor", :aria-hidden "true", :data-slot "icon"}
+           [:path {:d "M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"}]]]]]]
+      [:div {:class "slide-it divide-y divide-gray-100" :id "swap-me"}
+       [:div {:class "px-6 py-14 text-center text-sm sm:px-14"}
+        [:svg {:class "mx-auto h-6 w-6 text-gray-400", :fill "none", :viewbox "0 0 24 24", :stroke-width "1.5", :stroke "currentColor", :aria-hidden "true", :data-slot "icon"}
+         [:path {:stroke-linecap "round", :stroke-linejoin "round", :d "M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"}]]
+        [:p {:class "mt-4 font-semibold text-gray-900"} "No people found"]
+        [:p {:class "mt-2 text-gray-500"} "We couldn’t find anything with that term. Please try again."]]
+       [:div {:class "flex transform-gpu divide-x divide-gray-100"}
+        [:div {:class "max-h-96 min-w-0 flex-auto scroll-py-4 overflow-y-auto px-6 py-4 sm:h-96"}
+         [:h2 {:class "mb-4 mt-2 text-xs font-semibold text-gray-500"} "Participants"]
+         [:ul {:class "-mx-2 text-sm text-gray-700", :id "options", :role "listbox"}
+          (doall (for [actor actors]
+                   (insight-panel-actor actor)))]]
+        [:div {:class "hidden h-96 w-1/2 flex-none flex-col divide-y divide-gray-100 overflow-y-auto sm:flex"}
+         [:div {:class "flex-none p-6 text-center"}
+          [:span {:class "inline-block h-14 w-14 overflow-hidden rounded-full bg-gray-100"}
+           [:svg {:class "h-full w-full text-gray-300", :fill "currentColor", :viewbox "0 0 24 24"}
+            [:path {:d "M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z"}]]]
+          [:h2 {:class "mt-3 font-semibold text-gray-900"} "Tom Cook"]
+          [:p {:class "text-sm/6 text-gray-500"} "Director, Product Development"]]
+         [:div {:class "flex flex-auto flex-col justify-between p-6"}
+          [:button {:type "button",
+                    :class "mt-6 w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    :hx-get "/new-content"
+                    :hx-swap "innerHTML transition:true"
+                    :hx-target "#swap-me"}
+           "Earn Points"]]]]]])))
 
 (defn moar [req]
   (common/render-and-respond
@@ -64,23 +68,27 @@
     [:p {:class "mt-4 font-semibold text-gray-900"} "No people found"]
     [:p {:class "mt-2 text-gray-500"} "We couldn’t find anything with that term. Please try again."]]))
 
-(defn- silo-item [silo silo-id->actor-name]
-  [:li {:class "flex items-center justify-between gap-x-6 py-5 siloItem"
-        :id (util/id silo)
-        :style {"z-index" 200}}
-   [:div {:class "min-w-0"}
-    [:div {:class "flex items-start gap-x-3"}
-     [:p {:class "text-sm/6 font-semibold text-gray-900"} "New benefits plan"]
-     [:p {:class "mt-0.5 whitespace-nowrap rounded-md bg-gray-50 px-1.5 py-0.5 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"} "In progress"]]
-    [:div {:class "mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500"}
-     [:p {:class "whitespace-nowrap"}
-      [:time {:datetime "2023-05-05T00:00Z"} "May 5, 2023"]]
-     [:svg {:viewbox "0 0 2 2", :class "h-0.5 w-0.5 fill-current"}
-      [:circle {:cx "1", :cy "1", :r "1"}]]
-     [:p {:class "truncate"} "4 Participants"]]]
-   [:div {:class "flex flex-none items-center gap-x-4"}
-    [:a {:href "#", :class "hidden rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:block"} "View project"
-     [:span {:class "sr-only"} ", New benefits plan"]]]])
+(defn- main-ticker-silo-item [silo silo-id->actor-name]
+  (let [silo-id (util/id silo)
+        silo-actors (get silo-id->actor-name (util/id silo))]
+    [:li {:class "flex items-center justify-between gap-x-6 py-5 siloItem"
+          :id (util/id silo)
+          :style {"z-index" 200}
+          :hx-target (format "#%s" silo-insight-panel)
+          :hx-get (format "/silo/%s/insights" silo-id)}
+     [:div {:class "min-w-0"}
+      [:div {:class "flex items-start gap-x-3"}
+       [:p {:class "text-sm/6 font-semibold text-gray-900"} "New benefits plan"]
+       [:p {:class "mt-0.5 whitespace-nowrap rounded-md bg-gray-50 px-1.5 py-0.5 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"} "In progress"]]
+      [:div {:class "mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500"}
+       [:p {:class "whitespace-nowrap"}
+        [:time {:datetime "2023-05-05T00:00Z"} "May 5, 2023"]]
+       [:svg {:viewbox "0 0 2 2", :class "h-0.5 w-0.5 fill-current"}
+        [:circle {:cx "1", :cy "1", :r "1"}]]
+       [:p {:class "truncate"} (format "%s participants" (count silo-actors))]]]
+     [:div {:class "flex flex-none items-center gap-x-4"}
+      [:a {:href "#", :class "hidden rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:block"} "View project"
+       [:span {:class "sr-only"} ", New benefits plan"]]]]))
 
 (defn load-it [{:keys [ctx] :as req}]
   (let [silos (silo/all! ctx)
@@ -148,7 +156,7 @@
         [:main
          [:div {:class "mx-auto"}
           [:div {:class "mx-auto grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-2"}
-           [:div {:id "silo-detail-floating-window"
+           [:div {:id silo-insight-panel
                   :class "z-10 hidden"
                   :style {"position" "absolute"}}
             (insight-panel (first silos) silo-id->actor-name)]
@@ -165,6 +173,6 @@
                   :class "divide-y divide-gray-100"}
              (doall
               (for [silo (reverse (sort-by :created silos))]
-                (silo-item silo silo-id->actor-name)))]]]]
+                (main-ticker-silo-item silo silo-id->actor-name)))]]]]
 
          #_[:div {:class "mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8"}]]]]])))

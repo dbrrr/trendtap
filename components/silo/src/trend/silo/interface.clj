@@ -14,6 +14,9 @@
 (defn all! [ctx]
   (database/execute! ctx (repo/all ctx)))
 
+(defn by-id! [ctx silo-id]
+  (database/execute-one! ctx (repo/by-id ctx silo-id)))
+
 (defn delete! [ctx silo]
   (database/execute-one! ctx (repo/delete ctx silo)))
 
