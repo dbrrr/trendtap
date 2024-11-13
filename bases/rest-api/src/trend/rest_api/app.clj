@@ -8,18 +8,45 @@
 
 (def silo-insight-panel "silo-detail-floating-window")
 
-(defn- insight-panel-actor [actor]
-  [:li {:class "group flex cursor-default select-none items-center rounded-md p-2", :id "option-1", :role "option", :tabindex "-1"}
-   [:span {:class "inline-block h-6 w-6 overflow-hidden rounded-full bg-gray-100"}
-    [:svg {:class "h-full w-full text-gray-300", :fill "currentColor", :viewbox "0 0 24 24"}
-     [:path {:d "M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z"}]]]
-   [:span {:class "ml-3 flex-auto truncate"} actor]
-   [:svg {:class "ml-3 hidden h-5 w-5 flex-none text-gray-400", :viewbox "0 0 20 20", :fill "currentColor", :aria-hidden "true", :data-slot "icon"}
-    [:path {:fill-rule "evenodd", :d "M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z", :clip-rule "evenodd"}]]])
+(defn- insight-panel-actor [silo-id current-actor actor]
+  (let [active-classes " bg-gray-100 text-gray-900"
+        active? (= (util/id current-actor) (util/id actor))]
+    [:li {:hx-trigger "mouseover"
+          :hx-target (format "#%s" silo-insight-panel)
+          :hx-get (format "/silo/%s/insights?actor-id=%s" silo-id (util/id actor))
+          :class (cond-> "group flex cursor-default select-none items-center rounded-md p-2"
+                   active? (str active-classes)), :id "option-1", :role "option", :tabindex "-1"}
+     [:span {:class "inline-block h-6 w-6 overflow-hidden rounded-full bg-gray-100"}
+      [:svg {:class "h-full w-full text-gray-300", :fill "currentColor", :viewbox "0 0 24 24"}
+       [:path {:d "M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z"}]]]
+     [:span {:class "ml-3 flex-auto truncate"} (-> actor :details :description)]
+     [:svg {:class (cond-> "ml-3 size-2 flex-none text-gray-400"
+                     true (str " hidden")), :viewbox "0 0 20 20", :fill "currentColor", :aria-hidden "true", :data-slot "icon"}
+      [:path {:fill-rule "evenodd", :d "M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z", :clip-rule "evenodd"}]]]))
 
-(defn silo-insights-panel [ctx silo-id]
+(defn- insight-panel-actor-section [actor]
+  [:div {:class "hidden h-96 w-1/2 flex-none flex-col divide-y divide-gray-100 overflow-y-auto sm:flex"}
+   [:div {:class "flex-none p-6 text-center"}
+    [:span {:class "inline-block h-14 w-14 overflow-hidden rounded-full bg-gray-100"}
+     [:svg {:class "h-full w-full text-gray-300", :fill "currentColor", :viewbox "0 0 24 24"}
+      [:path {:d "M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z"}]]]
+    [:h2 {:class "mt-3 font-semibold text-gray-900"} (-> actor :details :description)]
+    [:p {:class "text-sm/6 text-gray-500"} "Director, Product Development"]]
+   [:div {:class "flex flex-auto flex-col justify-between p-6"}
+    [:button {:type "button",
+              :class "mt-6 w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              :hx-get "/new-content"
+              :hx-swap "innerHTML transition:true"
+              :hx-target "#swap-me"}
+     "Earn Points"]]])
+
+(defn silo-insights-panel [ctx actor-id silo-id]
   (let [silo (silo/by-id! ctx silo-id)
-        actors (map (comp :description :details) (actor/by-silo! ctx silo))]
+        actors (actor/by-silo! ctx silo)
+        current-actor (or (and actor-id
+                               (medley/find-first (comp #{actor-id} :id) actors))
+                          (first actors))
+        actors (actor/by-silo! ctx silo)]
     [:div {:class "z-10 mx-auto max-w-3xl transform overflow-hidden rounded-xl opacity-90 bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all"}
      [:div {:class "relative p-5 flex"}
       [:h1 {:class "text-xl font-semibold leading-6 text-gray-900"} "Meeting Title"]
@@ -38,26 +65,15 @@
         [:path {:stroke-linecap "round", :stroke-linejoin "round", :d "M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"}]]
        [:p {:class "mt-4 font-semibold text-gray-900"} "No people found"]
        [:p {:class "mt-2 text-gray-500"} "We couldn’t find anything with that term. Please try again."]]
-      [:div {:class "flex transform-gpu divide-x divide-gray-100"}
+      [:div {:id "silo-insights-actor-panel"
+             :class "flex transform-gpu divide-x divide-gray-100"}
        [:div {:class "max-h-96 min-w-0 flex-auto scroll-py-4 overflow-y-auto px-6 py-4 sm:h-96"}
         [:h2 {:class "mb-4 mt-2 text-xs font-semibold text-gray-500"} "Participants"]
         [:ul {:class "-mx-2 text-sm text-gray-700", :id "options", :role "listbox"}
-         (doall (for [actor actors]
-                  (insight-panel-actor actor)))]]
-       [:div {:class "hidden h-96 w-1/2 flex-none flex-col divide-y divide-gray-100 overflow-y-auto sm:flex"}
-        [:div {:class "flex-none p-6 text-center"}
-         [:span {:class "inline-block h-14 w-14 overflow-hidden rounded-full bg-gray-100"}
-          [:svg {:class "h-full w-full text-gray-300", :fill "currentColor", :viewbox "0 0 24 24"}
-           [:path {:d "M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z"}]]]
-         [:h2 {:class "mt-3 font-semibold text-gray-900"} "Tom Cook"]
-         [:p {:class "text-sm/6 text-gray-500"} "Director, Product Development"]]
-        [:div {:class "flex flex-auto flex-col justify-between p-6"}
-         [:button {:type "button",
-                   :class "mt-6 w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                   :hx-get "/new-content"
-                   :hx-swap "innerHTML transition:true"
-                   :hx-target "#swap-me"}
-          "Earn Points"]]]]]]))
+         (doall
+          (for [actor actors]
+            (insight-panel-actor silo-id current-actor actor)))]]
+       (insight-panel-actor-section current-actor)]]]))
 
 (defn moar [req]
   (common/render-and-respond
@@ -158,7 +174,9 @@
            [:div {:id silo-insight-panel
                   :class "z-10 hidden"
                   :style {"position" "absolute"}}
-            (silo-insights-panel ctx (util/id (first silos)))]
+            (silo-insights-panel ctx
+                                 (first (get silo-id->actor-name (util/id (first silos))))
+                                 (util/id (first silos)))]
 
            [:div {:id "activity-container"
                   :style {"width" "100%"

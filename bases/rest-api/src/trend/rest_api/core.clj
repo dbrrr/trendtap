@@ -123,10 +123,13 @@
                          :handler (fn [req] (silos-as-graph req))}]
      ["/silo/:silo-id"
       ["/insights" {:name :link/silo-insight
-                    :parameters {:path {:silo-id any?}}
+                    :parameters {:path {:silo-id any?}
+                                 :query any?}
                     :get {:handler (fn [{:keys [ctx] :as req}]
+                                     (println (-> req :parameters))
                                      (common/render-and-respond
                                       (app/silo-insights-panel ctx
+                                                               (-> req :parameters :query :actor-id)
                                                                (-> req :parameters :path :silo-id))))}}]]
      ["/silo/example"
       ["" {:name :link/silo-example

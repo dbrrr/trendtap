@@ -22,8 +22,6 @@
 
 (defn wrap-auth [handler]
   (fn [req]
-    (println "Authing")
-    (println (:ctx req))
     (if (:user (:ctx req))
       (handler req)
       {:status 301
@@ -32,10 +30,7 @@
 (defn wrap-session [handler]
   (fn [req]
     (let [session-cookie (get-in req [:cookies "session" :value])
-          _ (println (:cookies req))
-          _ (println session-cookie)
           account (account/by-email! (:ctx req) session-cookie)
-          _ (println account)
           new-ctx (if account
                     (assoc (:ctx req) :user account)
                     (:ctx req))]
