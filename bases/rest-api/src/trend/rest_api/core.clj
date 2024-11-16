@@ -51,8 +51,8 @@
    :body (slurp "bases/rest-api/resources/rest-api/tailwind.js")})
 
 (defn- actor->graph-element [actor]
-  (println (clojure.pprint/pprint actor))
-  {:data {:id (util/id actor)
+  {:data {:id (or (-> actor :account util/id)
+                  (util/id actor))
           :nodeType "actor"
           :backgroundImage (-> actor :account :details :profile-url)
           :label (-> actor :details :description)}})
@@ -66,7 +66,8 @@
    (map actor->graph-element (:actors silo))
    (for [actor (:actors silo)]
      {:data {:id (str (rand-int 10000))
-             :source (util/id actor)
+             :source (or (-> actor :account util/id)
+                         (util/id actor))
              :target (util/id silo)}})))
 
 (defn silos-as-graph [{:keys [ctx] :as req}]
