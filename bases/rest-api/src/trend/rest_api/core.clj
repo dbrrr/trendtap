@@ -50,22 +50,29 @@
    :headers {"Content-type" "text/css"}
    :body (slurp "bases/rest-api/resources/rest-api/tailwind.js")})
 
-(defn silos-as-graph [req]
-  (let [silos (silo/all! (:ctx req))
-        actors (actor/by-silos! (:ctx req) silos)
-        silos-used-by-actors (set (map :silo-id actors))
-        ;; TODO update these to uses classes instead of custom attributes
-        silo-nodes (map #(hash-map :data {:id %
-                                          :label ""
-                                          :nodeType "silo"}) silos-used-by-actors)
-        actor-nodes (map #(hash-map :data {:id (util/id %)
-                                           :nodeType "actor"
-                                           :label (-> % :details :description)}) actors)
-        meeting-edges (map #(hash-map :data {:id (str (rand-int 10000))
-                                             :source (util/id %)
-                                             :target (:silo-id %)})
-                           actors)]
-    {:body (json/write-str (vec (concat silo-nodes actor-nodes meeting-edges)))
+(defn- actor->graph-element [actor]
+  (println (clojure.pprint/pprint actor))
+  {:data {:id (util/id actor)
+          :nodeType "actor"
+          :backgroundImage (-> actor :account :details :profile-url)
+          :label (-> actor :details :description)}})
+
+(defn- silo->graph-elements [silo]
+  ;; TODO update these to uses classes instead of custom attributes
+  (concat
+   [{:data {:id (util/id silo)
+            :label ""
+            :nodeType "silo"}}]
+   (map actor->graph-element (:actors silo))
+   (for [actor (:actors silo)]
+     {:data {:id (str (rand-int 10000))
+             :source (util/id actor)
+             :target (util/id silo)}})))
+
+(defn silos-as-graph [{:keys [ctx] :as req}]
+  (let [silos (silo/all! ctx)
+        resolved-silos (map #(silo/resolve! ctx (util/id %)) silos)]
+    {:body (json/write-str (vec (mapcat silo->graph-elements resolved-silos)))
      :headers {"Content-Type" "application/json"}
      :status 200}))
 
@@ -135,7 +142,8 @@
                 ["/silo/example"
                  ["" {:name :link/silo-example
                       :get  {:handler (fn [req] (demo/silo (link/to :link/get-actor-row
-                                                                    :link/silo-example)))}
+                                                                    :link/silo-example)
+                                                           (-> req :ctx :user)))}
                       :post {:handler    (fn [{{form-params :form} :parameters :as req}]
                                            (demo/generate (:ctx req)
                                                           (link/to :link/app)

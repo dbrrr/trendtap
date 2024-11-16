@@ -18,3 +18,6 @@
 
 (defn by-email! [ctx email]
   (database/execute-one! ctx (repo/by-email email)))
+
+(defn by-id! [ctx id]
+  (database/execute-one! ctx (repo/by-id id)))

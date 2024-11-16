@@ -7,7 +7,8 @@
    [trend.silo.interface :as silo]
    [trend.transcript.interface :as transcript]
    [trend.actor.interface :as actor]
-   [trend.util.interface :as util]))
+   [trend.util.interface :as util]
+   [medley.core :as medley]))
 
 (defn add-actor-row [get-actor-row-link]
   [:tr {:id "add-actor"}
@@ -69,7 +70,7 @@
     (common/render (actor-row {}))
     (common/render (add-actor-row (:link/get-actor-row links))))))
 
-(defn silo [links]
+(defn silo [links user]
   (common/render-and-respond
    [:html
     common/head
@@ -91,7 +92,7 @@
             [:table {:class "min-w-full divide-y divide-gray-300"}
              [:tbody {:class "divide-y divide-gray-200 bg-white"}
               (actor-row {:id (random-uuid)
-                          :name "David Russell"
+                          :name (str (:first-name (:details user)) " " (:last-name (:details user)))
                           :current-user? true})
               (actor-row {:id (random-uuid)})
               (add-actor-row (:link/get-actor-row links))]]]]]]]
@@ -138,10 +139,14 @@
                                                                          :participants participants})}]))
         response (json/read-str demo :key-fn keyword)
         {:keys [actors]} (transcript/ingest-demo-format response)
-        silo (silo/create! ctx (silo/->meeting-transcript "foobar"))]
-    (doseq [actor actors]
-      (actor/create! ctx (util/id silo) {:description actor}))
-
+        silo (silo/create! ctx (silo/->meeting-transcript "foobar"))
+        actors (map #(actor/create! ctx (util/id silo) {:description %}) actors)
+        current-user (medley/find-first #(= (-> % :details :description)
+                                            (str (-> ctx :user :details :first-name)
+                                                 " "
+                                                 (-> ctx :user :details :last-name)))
+                                        actors)
+        _ (actor/link-to-account ctx (util/id current-user) (util/id (:user ctx)))]
     (common/render-and-respond
      [:html
       common/head

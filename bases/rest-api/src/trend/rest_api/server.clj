@@ -38,7 +38,7 @@
 #_(db/truncate-all (:db @system/system))
 
 (start! 6003)
-#_(stop!)
+(stop!)
 
 (defn -main [& _args]
   (start! (Integer/valueOf

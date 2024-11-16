@@ -2,7 +2,9 @@
   (:require [trend.database.interface :as database]
             [trend.silo.repo :as repo]
             [trend.silo.sample :as sample]
-            [trend.util.interface :as util]))
+            [trend.util.interface :as util]
+            [trend.actor.interface :as actor]
+            [medley.core :as medley]))
 
 (defn ->meeting-transcript [transcript-key]
   {:type :meeting-transcript
@@ -27,3 +29,11 @@
 
 (defn samples! [ctx silo]
   (database/execute! ctx (repo/samples-by-silo ctx silo)))
+
+(defn resolve! [ctx silo-id]
+  (let [silo (by-id! ctx silo-id)
+        actors (some->> silo
+                        (actor/by-silo! ctx)
+                        (map #(actor/resolve-account! ctx %)))]
+    (some-> silo
+            (assoc :actors actors))))

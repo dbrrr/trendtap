@@ -33,3 +33,8 @@
   (-> (hh/select :*)
       (hh/from account-table)
       (hh/where [:= :email email])))
+
+(defn by-id [id]
+  (-> (hh/select :*)
+      (hh/from account-table)
+      (hh/where [:= :id (parse-uuid (str id))])))
