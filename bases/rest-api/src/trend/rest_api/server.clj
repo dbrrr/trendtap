@@ -35,8 +35,10 @@
       (reset! server-ref nil))
     (println "No server")))
 
+#_(db/truncate-all (:db @system/system))
+
 (start! 6003)
-(stop!)
+#_(stop!)
 
 (defn -main [& _args]
   (start! (Integer/valueOf

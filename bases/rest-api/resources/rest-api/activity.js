@@ -62,7 +62,8 @@ function renderActor(ele) {
       <path d="${iconPath}" fill="${iconColor}" transform="scale(${scale})"></path>
     </svg>`;
   return {
-    svg: 'data:image/svg+xml;base64,' + btoa(svg),
+    //svg: 'data:image/svg+xml;base64,' + btoa(svg),
+    svg: "url('https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80')",
     background: backgroundColor,
     width: 32,
     height: 32,
@@ -93,6 +94,7 @@ cy = cytoscape({
       selector: 'node',
       style: {
         'background-color': (ele) => renderNode(ele).background,
+        'background-fit': "cover",
         'background-image': (ele) => renderNode(ele).svg,
         width: (ele) => renderNode(ele).width,
         height: (ele) => renderNode(ele).height,

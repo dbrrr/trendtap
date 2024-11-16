@@ -107,7 +107,8 @@
   (let [silos (silo/all! ctx)
         silo-id->actor (some->> (seq silos)
                                 (actor/by-silos! ctx)
-                                (group-by (comp str :silo-id)))]
+                                (group-by (comp str :silo-id)))
+        account (:user ctx)]
     (common/render-and-respond
      [:html
       common/head
@@ -137,7 +138,7 @@
                [:button {:type "button", :class "relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800", :id "user-menu-button", :aria-expanded "false", :aria-haspopup "true"}
                 [:span {:class "absolute -inset-1.5"}]
                 [:span {:class "sr-only"} "Open user menu"]
-                [:img {:class "h-8 w-8 rounded-full", :src "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", :alt ""}]]]]]]
+                [:img {:class "h-8 w-8 rounded-full", :src (-> account :details :profile-url)}]]]]]]
            [:div {:class "-mr-2 flex md:hidden"}
             [:button {:type "button", :class "relative inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800", :aria-controls "mobile-menu", :aria-expanded "false"}
              [:span {:class "absolute -inset-0.5"}]
