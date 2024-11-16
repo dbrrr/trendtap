@@ -31,6 +31,14 @@
                  [:= :tenant-id (parse-uuid tenant-id)]])
       (hh/returning [:*])))
 
+(defn set-details [{:keys [tenant-id] :as _ctx} silo-id details]
+  (-> (hh/update silo-table)
+      (hh/set {:details [:lift details]})
+      (hh/where [:and
+                 [:= :id (parse-uuid silo-id)]
+                 [:= :tenant-id (parse-uuid tenant-id)]])
+      (hh/returning [:*])))
+
 (defn record-sample [{:keys [tenant-id] :as _ctx} silo-id sampler-key sample]
   (-> (hh/insert-into silo-sample-table)
       (hh/values [{:tenant-id (parse-uuid tenant-id)

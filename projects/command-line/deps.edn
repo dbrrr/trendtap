@@ -4,6 +4,7 @@
         poly/cli {:local/root "../../bases/cli"}
         poly/transcript {:local/root "../../components/transcript"}
         poly/database {:local/root "../../components/database"}
+        poly/silo-enhancer {:local/root "../../components/silo-enhancer"}
         poly/account {:local/root "../../components/account"}
         poly/tenant {:local/root "../../components/tenant"}
         poly/completion {:local/root "../../components/completion"}

@@ -2,6 +2,7 @@
                   :extra-deps {org.clojure/clojure {:mvn/version "1.11.1"}
                                poly/transcript {:local/root "components/transcript"}
                                poly/silo {:local/root "components/silo"}
+                               poly/silo-enhancer {:local/root "components/silo-enhancer"}
                                poly/database {:local/root "components/database"}
                                poly/completion {:local/root "components/completion"}
                                poly/tenant {:local/root "components/tenant"}

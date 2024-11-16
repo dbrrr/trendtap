@@ -22,6 +22,9 @@
 (defn delete! [ctx silo]
   (database/execute-one! ctx (repo/delete ctx silo)))
 
+(defn set-details! [ctx silo details]
+  (database/execute-one! ctx (repo/set-details ctx (util/id silo) details)))
+
 (defn sample! [ctx sampler silo]
   (let [sample {:text (sample/-sample sampler silo)}
         sampler-key (sample/-key sampler)]

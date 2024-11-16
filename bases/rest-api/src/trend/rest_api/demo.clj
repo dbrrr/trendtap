@@ -1,11 +1,11 @@
 (ns trend.rest-api.demo
   (:require
-   [clojure.data.json :as json]
    [clojure.string :as str]
    [trend.completion.interface :as completion]
    [trend.rest-api.common :as common]
    [trend.silo.interface :as silo]
    [trend.transcript.interface :as transcript]
+   [trend.silo-enhancer.interface :as silo-enhancer]
    [trend.actor.interface :as actor]
    [trend.util.interface :as util]
    [medley.core :as medley]))
@@ -132,14 +132,14 @@
 
 (defn generate [ctx links form-params]
   (let [participants (->participants (dissoc form-params :description))
-        demo (completion/submit
-              (concat [{:role "system" :content (completion/render-prompt demo-system-message-template {})}]
-                      [{:role "user" :content (completion/render-prompt demo-user-message-template
-                                                                        {:description (:description form-params)
-                                                                         :participants participants})}]))
-        response (json/read-str demo :key-fn keyword)
+        response (completion/submit
+                  (concat [{:role "system" :content (completion/render-prompt demo-system-message-template {})}]
+                          [{:role "user" :content (completion/render-prompt demo-user-message-template
+                                                                            {:description (:description form-params)
+                                                                             :participants participants})}]))
         {:keys [actors]} (transcript/ingest-demo-format response)
         silo (silo/create! ctx (silo/->meeting-transcript "foobar"))
+        _ (silo-enhancer/summarize! ctx silo)
         actors (map #(actor/create! ctx (util/id silo) {:description %}) actors)
         current-user (medley/find-first #(= (-> % :details :description)
                                             (str (-> ctx :user :details :first-name)
