@@ -140,6 +140,7 @@
         {:keys [actors]} (transcript/ingest-demo-format response)
         silo (silo/create! ctx (silo/->meeting-transcript "foobar"))
         _ (silo-enhancer/summarize! ctx silo)
+        _ (silo-enhancer/generate-title! ctx silo)
         actors (map #(actor/create! ctx (util/id silo) {:description %}) actors)
         current-user (medley/find-first #(= (-> % :details :description)
                                             (str (-> ctx :user :details :first-name)

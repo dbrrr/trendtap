@@ -47,7 +47,7 @@
         actors (actor/by-silo! ctx silo)]
     [:div {:class "z-10 mx-auto max-w-3xl transform overflow-hidden rounded-xl opacity-90 bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all"}
      [:div {:class "relative p-5 flex"}
-      [:h1 {:class "text-xl font-semibold leading-6 text-gray-900"} "Meeting Title"]
+      [:h1 {:class "text-xl font-semibold leading-6 text-gray-900"} (-> silo :details :title)]
       [:div {:class "ml-auto"}
        [:div {:class "-mx-1.5 -my-1.5"}
         [:button {:type "button",

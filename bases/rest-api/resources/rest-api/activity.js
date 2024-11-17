@@ -11,7 +11,7 @@ function renderSilo(ele) {
   const height = size;
   const scale = (size - iconResize) / size;
   const iconTranslate = iconResize / 2 / scale;
-  const backgroundColor = `#CB6040`;
+  const backgroundColor = "#BA0C2F";
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
       <path d="M290.135,268.067v201.267c0,4.71,3.823,8.533,8.533,8.533s8.533-3.823,8.533-8.533V285.134l2.5,2.5 c1.664,1.664,3.849,2.5,6.033,2.5s4.369-0.836,6.033-2.5c3.337-3.337,3.337-8.73,0-12.066l-17.058-17.067h-0.009l-48.7-48.7 v-30.601c0-4.71-3.823-8.533-8.533-8.533s-8.533,3.823-8.533,8.533v25.6H76.802c-2.261,0-4.437,0.896-6.033,2.5l-51.2,51.191 c0,0.008,0,0.008-0.009,0.008L2.502,275.568c-3.336,3.336-3.336,8.73,0,12.066c3.337,3.336,8.73,3.336,12.066,0l2.5-2.5v184.201 c0,4.71,3.823,8.533,8.533,8.533c4.71,0,8.533-3.823,8.533-8.533V268.067l46.2-46.199h163.601L290.135,268.067z"
@@ -42,8 +42,8 @@ function renderSilo(ele) {
     //svg: 'data:image/svg+xml;base64,' + btoa(svg),
     svg: "none",
     background: backgroundColor,
-    width: 16,
-    height: 16,
+    width: 8,
+    height: 8,
   };
 }
 
@@ -51,13 +51,15 @@ function renderSilo(ele) {
 function renderActor(ele) {
   // Icon path is assumed to be of 32x32 in this example. You may auto calculate this if you wish.
   const iconPath = "M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z";
-  const iconColor = `#F2E5BF`;
+  const iconColor = `#00205B`;
+
   const size = 32; // may need to calculate this yourself
   const iconResize = 0; // adjust this for more "padding" (bigger number = more smaller icon)
   const width = size;
   const height = size;
   const scale = (size / 24);
-  const backgroundColor = `#257180`;
+  const backgroundColor = `#FFF`;
+
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
       <path d="${iconPath}" fill="${iconColor}" transform="scale(${scale})"></path>
     </svg>`;
@@ -107,6 +109,8 @@ cy = cytoscape({
       style: {
         'background-color': (ele) => renderNode(ele).background,
         'background-fit': "cover",
+        'border-width': "1px",
+        'border-color': "#EEE",
         'background-image': (ele) => renderNode(ele).svg,
         width: (ele) => renderNode(ele).width,
         height: (ele) => renderNode(ele).height,
@@ -128,7 +132,7 @@ cy = cytoscape({
       selector: 'edge',
       style: {
         'width': 2,
-        'line-color': `#F2E5BF`,
+        'line-color': `#00205B`,
         'target-arrow-color': '#ccc',
         'target-arrow-shape': 'none',
         'curve-style': 'straight-triangle'
@@ -138,7 +142,7 @@ cy = cytoscape({
     {
       selector: 'node.highlighted',
       style: {
-        'background-color': "#FD8B51"
+        'border-color': "#BA0C2F",
       }
     }
 
