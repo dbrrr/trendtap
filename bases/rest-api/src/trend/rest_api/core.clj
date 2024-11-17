@@ -54,6 +54,7 @@
   {:data {:id (or (-> actor :account util/id)
                   (util/id actor))
           :nodeType "actor"
+          :linked (some? (-> actor :account util/id))
           :backgroundImage (-> actor :account :details :profile-url)
           :label (-> actor :details :description)}})
 
