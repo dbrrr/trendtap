@@ -20,10 +20,8 @@
 
 (defn generate-title! [ctx silo]
   (let [transcript (transcript/from-silo silo)
+        ;; TODO this won't always be JSON, we need to handle that
         response (completion/submit
                   (concat [{:role "system" :content (completion/render-prompt title-system-message-template {})}]
                           [{:role "user" :content (completion/render-prompt title-user-message-template {:transcript transcript})}]))]
-
     (silo/set-details! ctx silo (assoc (:details silo) :title response))))
-
-(generate-title! @system/system (first (silo/all! @system/system)))

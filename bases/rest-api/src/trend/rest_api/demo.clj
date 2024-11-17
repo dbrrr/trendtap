@@ -136,17 +136,24 @@
                   (concat [{:role "system" :content (completion/render-prompt demo-system-message-template {})}]
                           [{:role "user" :content (completion/render-prompt demo-user-message-template
                                                                             {:description (:description form-params)
-                                                                             :participants participants})}]))
+                                                                             :participants participants})}])
+                  {:json true})
         {:keys [actors]} (transcript/ingest-demo-format response)
-        silo (silo/create! ctx (silo/->meeting-transcript "foobar"))
-        _ (silo-enhancer/summarize! ctx silo)
-        _ (silo-enhancer/generate-title! ctx silo)
-        actors (map #(actor/create! ctx (util/id silo) {:description %}) actors)
+        silo (->> (silo/create! ctx (silo/->meeting-transcript "foobar"))
+                  (silo-enhancer/summarize! ctx)
+                  (silo-enhancer/generate-title! ctx))
+        created-actors (map #(actor/create! ctx (util/id silo) {:description %}) actors)
         current-user (medley/find-first #(= (-> % :details :description)
                                             (str (-> ctx :user :details :first-name)
                                                  " "
                                                  (-> ctx :user :details :last-name)))
-                                        actors)
+                                        created-actors)
+        _ (println actors)
+        _ (println (:user ctx))
+        _ (println current-user)
+        _ (println (str (-> ctx :user :details :first-name)
+                        " "
+                        (-> ctx :user :details :last-name)))
         _ (actor/link-to-account ctx (util/id current-user) (util/id (:user ctx)))]
     (common/render-and-respond
      [:html

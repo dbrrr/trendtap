@@ -27,6 +27,7 @@
     result))
 
 (defn ingest-demo-format [{:keys [transcript] :as demo-transcript}]
+  (println transcript)
   (let [actors (set (map :participant transcript))
         transcript (apply str (map #(format "%s: %s\n" (:participant %) (:text %))
                                    transcript))]
